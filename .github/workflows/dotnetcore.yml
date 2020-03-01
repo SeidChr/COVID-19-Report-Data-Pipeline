@@ -15,3 +15,5 @@ jobs:
         dotnet-version: 3.1.102
     - name: Build with dotnet
       run: dotnet build --configuration Release
+    - name: Run with dotnet
+      run: dotnet run --configuration Release
