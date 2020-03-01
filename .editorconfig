@@ -1,0 +1,13 @@
+[*.cs]
+
+# SA1633: File should have header
+# code is not copyrighted
+dotnet_diagnostic.SA1633.severity = silent
+
+# SA1028: Code should not contain trailing whitespace
+# usually removed by code format.
+dotnet_diagnostic.SA1028.severity = silent
+
+# SA1600: Elements should be documented
+# code may be self explainatory. documentations is still encouraged.
+dotnet_diagnostic.SA1600.severity = silent

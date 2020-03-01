@@ -22,8 +22,6 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             var github = new Github();
             var asyncFiles = await github.GetFileInfoAsync(
                 "CSSEGISandData",
