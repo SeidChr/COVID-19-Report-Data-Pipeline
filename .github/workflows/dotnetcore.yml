@@ -1,6 +1,11 @@
 name: .NET Core
 
-on: [push]
+on: 
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 6 * * *'
 
 jobs:
   build:
@@ -17,3 +22,8 @@ jobs:
       run: dotnet build --configuration Release
     - name: Run with dotnet
       run: dotnet run --configuration Release
+    - name: Upload plot
+      uses: actions/upload-artifact@v1
+      with:
+        name: plot
+        path: plot.png
