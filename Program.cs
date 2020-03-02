@@ -8,7 +8,9 @@
     using System.Threading.Tasks;
     using Corona.CsvModel;
     using Corona.GithubClient;
+    using Corona.PlotModel;
     using FileHelpers;
+    using ScottPlot;
 
     /// <summary>
     /// Main Programm class.
@@ -42,6 +44,7 @@
                 .Select(f => new { File = f, Date = ParseFileName(f.Name) })
                 .OrderBy(fd => fd.Date);
 
+            List<PlotData> plotData = new List<PlotData>();
             foreach (var fileInfo in orderedFiles)
             {
                 // System.Console.WriteLine("F:" + fileInfo.File.Name);
@@ -53,8 +56,56 @@
                 var confirmed = dayList.Sum(i => i.Confirmed);
                 var existing = confirmed - recovered - deaths;
 
+                plotData.Add(new PlotData
+                {
+                    Date = fileInfo.Date,
+                    Deaths = deaths,
+                    Confirmed = confirmed,
+                    Recovered = recovered,
+                    Existing = existing,
+                });
+
                 System.Console.WriteLine($"{fileInfo.Date:dd-MM-yyyy},{confirmed},{recovered},{deaths},{existing}");
             }
+
+            DateTime start = plotData.First().Date;
+            var plt = new ScottPlot.Plot(1000, 500);
+            plt.PlotSignal(
+                plotData.Select(pd => (double)pd.Existing).ToArray(),
+                sampleRate: 1,
+                xOffset: start.ToOADate(),
+                label: "Existing");
+
+            plt.PlotSignal(
+                plotData.Select(pd => (double)pd.Confirmed).ToArray(),
+                sampleRate: 1,
+                xOffset: start.ToOADate(),
+                label: "Confirmed");
+
+            plt.PlotSignal(
+                plotData.Select(pd => (double)pd.Recovered).ToArray(),
+                sampleRate: 1,
+                xOffset: start.ToOADate(),
+                label: "Recovered");
+
+            plt.PlotSignal(
+                plotData.Select(pd => (double)pd.Deaths).ToArray(),
+                sampleRate: 1,
+                xOffset: start.ToOADate(),
+                label: "Dead");
+
+            plt.Ticks(
+                dateTimeX: true,
+                useExponentialNotation: false,
+                useMultiplierNotation: false,
+                useOffsetNotation: false);
+
+            plt.Title("Corona Virus Cases");
+            plt.YLabel("Cases");
+            plt.XLabel("Date");
+            plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
+
+            plt.SaveFig("plot.png");
         }
     }
 }
