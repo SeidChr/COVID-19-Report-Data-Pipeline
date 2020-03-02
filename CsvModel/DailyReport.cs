@@ -29,5 +29,16 @@ namespace Corona.CsvModel
         [FieldOrder(70)]
         [FieldNullValue(0)]
         public int Recovered { get; set; }
+
+        [FieldOrder(80)]
+        [FieldNullValue(0.0)]
+        [FieldOptional]
+        public double Lat { get; set; }
+
+
+        [FieldOrder(90)]
+        [FieldNullValue(0.0)]
+        [FieldOptional]
+        public double Lon { get; set; }
     }
 }
