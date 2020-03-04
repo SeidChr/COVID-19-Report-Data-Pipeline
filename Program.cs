@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -74,34 +75,38 @@
                 plotData.Select(pd => (double)pd.Existing).ToArray(),
                 sampleRate: 1,
                 xOffset: start.ToOADate(),
+                color: Color.Orange,
                 label: "Existing");
 
             plt.PlotSignal(
                 plotData.Select(pd => (double)pd.Confirmed).ToArray(),
                 sampleRate: 1,
                 xOffset: start.ToOADate(),
+                color: Color.Red,
                 label: "Confirmed");
 
             plt.PlotSignal(
                 plotData.Select(pd => (double)pd.Recovered).ToArray(),
                 sampleRate: 1,
                 xOffset: start.ToOADate(),
+                color: Color.Green,
                 label: "Recovered");
 
             plt.PlotSignal(
                 plotData.Select(pd => (double)pd.Deaths).ToArray(),
                 sampleRate: 1,
                 xOffset: start.ToOADate(),
+                color: Color.Black,
                 label: "Dead");
 
             plt.Ticks(
                 dateTimeX: true,
                 useExponentialNotation: false,
-                useMultiplierNotation: false,
+                ////useMultiplierNotation: false,
                 useOffsetNotation: false);
 
-            plt.Title("Corona Virus Cases");
-            plt.YLabel("Cases");
+            plt.Title("COVID-19 Cases");
+            plt.YLabel("People");
             plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
 
