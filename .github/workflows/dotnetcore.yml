@@ -29,10 +29,10 @@ jobs:
         path: plot.png
     - name: Publish plot
       run: |
-        mkdir /mnt/${{ secrets.azureUser }}
-        mkdir /etc/smbcredentials
-        bash -c 'echo "username=${{ secrets.azureUser }}" >> /etc/smbcredentials/${{ secrets.azureUser }}.cred'
-        bash -c 'echo "password=${{ secrets.azurePassword }}" >> /etc/smbcredentials/${{ secrets.azureUser }}.cred'
-        chmod 600 /etc/smbcredentials/${{ secrets.azureUser }}.cred
-        mount -t cifs //${{ secrets.azureUser }}.file.core.windows.net/coronaplot /mnt/${{ secrets.azureUser }} -o vers=3.0,credentials=/etc/smbcredentials/${{ secrets.azureUser }}.cred,dir_mode=0777,file_mode=0777,serverino
-        cp ./plot.png /mnt/${{ secrets.azureUser }}/plot.png
+        sudo mkdir /mnt/${{ secrets.azureUser }}
+        sudo mkdir /etc/smbcredentials
+        sudo bash -c 'echo "username=${{ secrets.azureUser }}" >> /etc/smbcredentials/${{ secrets.azureUser }}.cred'
+        sudo bash -c 'echo "password=${{ secrets.azurePassword }}" >> /etc/smbcredentials/${{ secrets.azureUser }}.cred'
+        sudo chmod 600 /etc/smbcredentials/${{ secrets.azureUser }}.cred
+        sudo mount -t cifs //${{ secrets.azureUser }}.file.core.windows.net/coronaplot /mnt/${{ secrets.azureUser }} -o vers=3.0,credentials=/etc/smbcredentials/${{ secrets.azureUser }}.cred,dir_mode=0777,file_mode=0777,serverino
+        sudo cp ./plot.png /mnt/${{ secrets.azureUser }}/plot.png
