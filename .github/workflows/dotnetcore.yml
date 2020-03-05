@@ -32,4 +32,4 @@ jobs:
       with:
         version: 'v10'
     - name: Publish plot
-      run: azcopy copy 'plot.png' '${{ secrets.azureWebBlobSAS }}'
+      run: azcopy 'plot.png' '${{ secrets.azureWebBlobSAS }}'
