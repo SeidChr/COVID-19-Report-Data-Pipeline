@@ -32,5 +32,5 @@ jobs:
     - name: Publish plot
       # https://docs.microsoft.com/de-de/azure/storage/common/storage-ref-azcopy-copy
       run: |
-        azcopy --help 
-      #run: azcopy --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' --set-content-type 'image/png'
+        alias azcp=/opt/hostedtoolcache/azcopy/v10/x64/azcopy_linux_amd64_10.3.4/azcopy
+        azcp --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' --set-content-type 'image/png' --overwrite
