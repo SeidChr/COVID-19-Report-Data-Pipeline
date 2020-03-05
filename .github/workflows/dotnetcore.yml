@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install AzCopy
+      uses: kheiakiyama/install-azcopy-action@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -27,13 +29,8 @@ jobs:
       with:
         name: plot
         path: plot.png
-    - name: Install AzCopy
-      uses: kheiakiyama/install-azcopy-action@v1
-      with:
-        version: 'v10'
     - name: Publish plot
       # https://docs.microsoft.com/de-de/azure/storage/common/storage-ref-azcopy-copy
       run: |
-        sudo ls /opt/hostedtoolcache/azcopy/v10/x64
-        sudo /opt/hostedtoolcache/azcopy/v10/x64/azcopy --help 
+        azcopy --help 
       #run: azcopy --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' --set-content-type 'image/png'
