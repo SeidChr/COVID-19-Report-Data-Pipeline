@@ -33,4 +33,6 @@ jobs:
         version: 'v10'
     - name: Publish plot
       # https://docs.microsoft.com/de-de/azure/storage/common/storage-ref-azcopy-copy
-      run: azcopy cp --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' --content-type 'image/png' --content-disposition 'inline'
+      run: |
+        azcopy --help 
+      # azcopy --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}'
