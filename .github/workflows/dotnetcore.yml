@@ -32,4 +32,4 @@ jobs:
       with:
         version: 'v10'
     - name: Publish plot
-      run: azcopy --source 'plot.png' --destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' --setcontenttype:'image/png'
+      run: azcopy /Source 'plot.png' /Destination '${{ secrets.azureWebBlob }}/plot.png${{ secrets.azureWebBlobSAS }}' /SetContentType:'image/png'
