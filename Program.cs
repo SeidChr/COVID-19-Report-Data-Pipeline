@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -31,8 +32,8 @@
                 "COVID-19",
                 "csse_covid_19_data/csse_covid_19_daily_reports");
 
-            var csvEngine = new FileHelperEngine<DailyReport>();
-            var data = new List<KeyValuePair<DateTime, List<DailyReport>>>();
+            var csvEngine = new FileHelperEngine<ReportData>();
+            var data = new List<KeyValuePair<DateTime, List<ReportData>>>();
             static DateTime ParseFileName(string fileName)
                 => DateTime.ParseExact(
                     fileName.Substring(0, 10),
@@ -45,72 +46,108 @@
                 .Select(f => new { File = f, Date = ParseFileName(f.Name) })
                 .OrderBy(fd => fd.Date);
 
-            List<PlotData> plotData = new List<PlotData>();
+            List<PlotData> plotDataListGlobal = new List<PlotData>();
+
+            var plotDataRegional = new Dictionary<string, List<PlotData>>
+            {
+                ["Germany"] = new List<PlotData>(),
+                ["Italy"] = new List<PlotData>(),
+            };
+
             foreach (var fileInfo in orderedFiles)
             {
-                // System.Console.WriteLine("F:" + fileInfo.File.Name);
+                System.Console.WriteLine($"Processing {fileInfo.Date:dd-MM-yyyy}");
+
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
-                var dayList = csvEngine.ReadStringAsList(fileData.Contents);
+                var dailyReport = csvEngine.ReadStringAsList(fileData.Contents);
 
-                var deaths = dayList.Sum(i => i.Deaths);
-                var recovered = dayList.Sum(i => i.Recovered);
-                var confirmed = dayList.Sum(i => i.Confirmed);
-                var existing = confirmed - recovered - deaths;
-
-                plotData.Add(new PlotData
+                foreach (var region in plotDataRegional.Keys)
                 {
-                    Date = fileInfo.Date,
-                    Deaths = deaths,
-                    Confirmed = confirmed,
-                    Recovered = recovered,
-                    Existing = existing,
-                });
+                    plotDataRegional[region]
+                        .Add(CreatePlotData(fileInfo.Date, dailyReport.Where(r => r.Region == region)));
+                }
 
-                System.Console.WriteLine($"{fileInfo.Date:dd-MM-yyyy},{confirmed},{recovered},{deaths},{existing}");
+                plotDataListGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
             }
 
-            DateTime start = plotData.First().Date;
+            CreatePlot(plotDataListGlobal, "COVID-19 Cases", "plot.png");
+
+            foreach (var region in plotDataRegional.Keys)
+            {
+                CreatePlot(
+                    plotDataRegional[region],
+                    $"COVID-19 Cases {region}",
+                    $"plot-{region.ToLower().Replace(" ", string.Empty)}.png");
+            }
+        }
+
+        private static PlotData CreatePlotData(DateTime date, IEnumerable<ReportData> dayList)
+        {
+            var deaths = dayList.Sum(i => i.Deaths);
+            var recovered = dayList.Sum(i => i.Recovered);
+            var confirmed = dayList.Sum(i => i.Confirmed);
+            var existing = confirmed - recovered - deaths;
+
+            ////System.Console.WriteLine($"{date:dd-MM-yyyy},{confirmed},{recovered},{deaths},{existing}");
+
+            return new PlotData
+            {
+                Date = date,
+                Deaths = deaths,
+                Confirmed = confirmed,
+                Recovered = recovered,
+                Existing = existing,
+            };
+        }
+
+        private static void CreatePlot(List<PlotData> plotDataList, string label, string file)
+        {
+            var start = plotDataList.First().Date.ToOADate();
             var plt = new ScottPlot.Plot(1000, 500);
             plt.PlotSignal(
-                plotData.Select(pd => (double)pd.Existing).ToArray(),
+                plotDataList.Select(pd => (double)pd.Existing).ToArray(),
                 sampleRate: 1,
-                xOffset: start.ToOADate(),
+                xOffset: start,
                 color: Color.Orange,
                 label: "Existing");
 
             plt.PlotSignal(
-                plotData.Select(pd => (double)pd.Confirmed).ToArray(),
+                plotDataList.Select(pd => (double)pd.Confirmed).ToArray(),
                 sampleRate: 1,
-                xOffset: start.ToOADate(),
+                xOffset: start,
                 color: Color.Red,
                 label: "Confirmed");
 
             plt.PlotSignal(
-                plotData.Select(pd => (double)pd.Recovered).ToArray(),
+                plotDataList.Select(pd => (double)pd.Recovered).ToArray(),
                 sampleRate: 1,
-                xOffset: start.ToOADate(),
+                xOffset: start,
                 color: Color.Green,
                 label: "Recovered");
 
             plt.PlotSignal(
-                plotData.Select(pd => (double)pd.Deaths).ToArray(),
+                plotDataList.Select(pd => (double)pd.Deaths).ToArray(),
                 sampleRate: 1,
-                xOffset: start.ToOADate(),
+                xOffset: start,
                 color: Color.Black,
                 label: "Dead");
 
             plt.Ticks(
                 dateTimeX: true,
                 useExponentialNotation: false,
-                ////useMultiplierNotation: false,
+                useMultiplierNotation: false,
                 useOffsetNotation: false);
 
-            plt.Title("COVID-19 Cases");
+            plt.Title(label);
             plt.YLabel("People");
             plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
+            plt.TightenLayout(render: true);
+            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30);
+            plt.Axis(y2: plotDataList.Max(pd => pd.Confirmed) * 1.03);
 
-            plt.SaveFig("plot.png");
+            Directory.CreateDirectory("plots");
+            plt.SaveFig("plots/" + file);
         }
     }
 }

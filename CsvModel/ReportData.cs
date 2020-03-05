@@ -5,7 +5,7 @@ namespace Corona.CsvModel
 
     [DelimitedRecord(",")]
     [IgnoreFirst]
-    public class DailyReport
+    public class ReportData
     {
         [FieldOrder(20)]
         [FieldQuoted]
@@ -34,7 +34,6 @@ namespace Corona.CsvModel
         [FieldNullValue(0.0)]
         [FieldOptional]
         public double Lat { get; set; }
-
 
         [FieldOrder(90)]
         [FieldNullValue(0.0)]
