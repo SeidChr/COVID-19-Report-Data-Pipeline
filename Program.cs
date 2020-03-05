@@ -19,6 +19,8 @@
     /// </summary>
     public class Program
     {
+        private static CultureInfo plotCulture;
+
         /// <summary>
         /// Main Programm entry point.
         /// </summary>
@@ -26,6 +28,22 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
+            plotCulture = new CultureInfo(string.Empty);
+            var dateTimeFormat = new DateTimeFormatInfo
+            {
+                ShortDatePattern = "dd-MM-yyyy",
+            };
+
+            var numberFormat = new NumberFormatInfo
+            {
+                NumberDecimalDigits = 2,
+                NumberDecimalSeparator = ",",
+                NumberGroupSeparator = string.Empty,
+            };
+
+            plotCulture.DateTimeFormat = dateTimeFormat;
+            plotCulture.NumberFormat = numberFormat;
+
             var github = new Github();
             var asyncFiles = await github.GetFileInfoAsync(
                 "CSSEGISandData",
@@ -145,6 +163,8 @@
             plt.TightenLayout(render: true);
             plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30);
             plt.Axis(y2: plotDataList.Max(pd => pd.Confirmed) * 1.03);
+
+            plt.SetCulture(plotCulture);
 
             Directory.CreateDirectory("plots");
             plt.SaveFig("plots/" + file);
