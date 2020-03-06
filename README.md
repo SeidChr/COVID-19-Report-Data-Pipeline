@@ -5,4 +5,4 @@ The code in this repo creates a set of plots about the spread of the Covid-19 Co
 The plots look like this:
 ![PLOT GLOBAL](https://bitmonkey.z6.web.core.windows.net/plot.png)
 
-All plots can be found in the Wiki.
+All plots can be found in the ![Wiki](https://github.com/SeidChr/COVID-19-Report-Data-Pipeline/wiki/The-Plot).
