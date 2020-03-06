@@ -1,6 +1,6 @@
+#nullable enable
 namespace Corona.CsvModel
 {
-    using System;
     using FileHelpers;
 
     [DelimitedRecord(",")]
@@ -9,14 +9,14 @@ namespace Corona.CsvModel
     {
         [FieldOrder(20)]
         [FieldQuoted]
-        public string Province { get; set; }
+        public string Province { get; set; } = string.Empty;
 
         [FieldOrder(30)]
         [FieldQuoted]
-        public string Region { get; set; }
+        public string Region { get; set; } = string.Empty;
 
         [FieldOrder(40)]
-        public string LastUpdate { get; set; }
+        public string LastUpdate { get; set; } = string.Empty;
 
         [FieldOrder(50)]
         [FieldNullValue(0)]

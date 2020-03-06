@@ -1,3 +1,4 @@
+#nullable enable
 namespace Corona.GithubClient.Model
 {
     // JSON parsing methods

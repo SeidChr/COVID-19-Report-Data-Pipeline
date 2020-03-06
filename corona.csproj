@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DefaultNamespace>Corona</DefaultNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

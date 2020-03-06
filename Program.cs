@@ -1,4 +1,5 @@
-﻿namespace Corona
+﻿#nullable enable
+namespace Corona
 {
     using System;
     using System.Collections.Generic;
@@ -19,14 +20,14 @@
     /// </summary>
     public class Program
     {
-        private static CultureInfo plotCulture;
+        private static CultureInfo? plotCulture;
 
         /// <summary>
         /// Main Programm entry point.
         /// </summary>
         /// <param name="args">Commandline Arguments.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task Main(string[] args)
+        public static async Task Main()
         {
             InitializePlotCluture();
 

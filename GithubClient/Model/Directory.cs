@@ -1,3 +1,4 @@
+#nullable enable
 namespace Corona.GithubClient.Model
 {
     using System.Collections.Generic;

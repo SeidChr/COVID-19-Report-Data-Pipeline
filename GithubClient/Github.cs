@@ -1,96 +1,27 @@
+#nullable enable
 namespace Corona.GithubClient
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Net.Http;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
 
-    /// <summary>
-    /// Github classes.
-    /// </summary>
     public class Github
     {
-        private readonly string accessToken;
+        private readonly string? accessToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Github"/> class.
         /// </summary>
         /// <param name="accessToken">option github access token for private repos.</param>
-        public Github(string accessToken = null)
+        public Github(string? accessToken = null)
         {
             this.accessToken = accessToken;
         }
 
         private Lazy<HttpClient> Client { get; set; } = new Lazy<HttpClient>();
-
-        /// <summary>
-        /// recursively get the contents of all files and subdirectories within a directory
-        /// based on https://gist.github.com/EvanSnapp/ddf7f7f793474ea9631cbc0960295983 .
-        /// </summary>
-        /// <param name="respositoryOwner">github account.</param>
-        /// <param name="repositoryName">github repo.</param>
-        /// <param name="directoryPath">path in repo.</param>
-        /// <param name="readFilePattern">regex pattern for file to be downloaded.</param>
-        /// <param name="recursive">check sub directories.</param>
-        /// <returns>Directory-Model.</returns>
-        public async Task<Model.Directory> DumpDirectoryAsync(
-            string respositoryOwner,
-            string repositoryName,
-            string directoryPath = "/",
-            string readFilePattern = @".*",
-            bool recursive = false)
-        {
-            var dirContents = await this.GetFileInfoAsync(
-                respositoryOwner,
-                repositoryName,
-                directoryPath,
-                true);
-
-            // read in data
-            Model.Directory result = default;
-            result.Name = "root";
-            result.Directories = new List<Model.Directory>();
-            result.Files = new List<Model.FileData>();
-
-            foreach (Model.FileInfo file in dirContents)
-            {
-                if (file.Type == "dir")
-                {
-                    if (recursive)
-                    {
-                        Model.Directory sub = await this.DumpDirectoryAsync(
-                            respositoryOwner,
-                            repositoryName,
-                            Path.Combine(directoryPath, file.Name),
-                            readFilePattern,
-                            recursive);
-
-                        result.Directories.Add(sub);
-                    }
-                    else
-                    {
-                        result.Directories.Add(
-                            new Model.Directory
-                            {
-                                Name = file.Name,
-                            });
-                    }
-                }
-                else
-                {
-                    if (Regex.Match(file.Name, readFilePattern).Success)
-                    {
-                        result.Files.Add(await this.GetFileDataAsync(file));
-                    }
-                }
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Fetches files in a directory.
@@ -136,7 +67,7 @@ namespace Corona.GithubClient
                 Contents = await this.GetResponseData(fileInfo.Download_Url),
             };
 
-        private static void AttachHeaders(HttpRequestMessage requestMessage, string authToken)
+        private static void AttachHeaders(HttpRequestMessage requestMessage, string? authToken)
         {
             if (authToken != null)
             {
