@@ -163,7 +163,7 @@
             plt.TightenLayout(render: true);
             plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 30);
             plt.Axis(y2: plotDataList.Max(pd => pd.Confirmed) * 1.03);
-            plt.Style(ScottPlot.Style.Light2);
+            plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
 
             plt.SetCulture(plotCulture);
 
