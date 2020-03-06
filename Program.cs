@@ -28,21 +28,7 @@
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
-            plotCulture = new CultureInfo(string.Empty);
-            var dateTimeFormat = new DateTimeFormatInfo
-            {
-                ShortDatePattern = "dd-MM-yyyy",
-            };
-
-            var numberFormat = new NumberFormatInfo
-            {
-                NumberDecimalDigits = 2,
-                NumberDecimalSeparator = ",",
-                NumberGroupSeparator = string.Empty,
-            };
-
-            plotCulture.DateTimeFormat = dateTimeFormat;
-            plotCulture.NumberFormat = numberFormat;
+            InitializePlotCluture();
 
             var github = new Github();
             var asyncFiles = await github.GetFileInfoAsync(
@@ -99,14 +85,31 @@
             }
         }
 
-        private static PlotData CreatePlotData(DateTime date, IEnumerable<ReportData> dayList)
+        private static void InitializePlotCluture()
         {
-            var deaths = dayList.Sum(i => i.Deaths);
-            var recovered = dayList.Sum(i => i.Recovered);
-            var confirmed = dayList.Sum(i => i.Confirmed);
-            var existing = confirmed - recovered - deaths;
+            plotCulture = new CultureInfo(string.Empty);
+            var dateTimeFormat = new DateTimeFormatInfo
+            {
+                ShortDatePattern = "dd-MM-yyyy",
+            };
 
-            ////System.Console.WriteLine($"{date:dd-MM-yyyy},{confirmed},{recovered},{deaths},{existing}");
+            var numberFormat = new NumberFormatInfo
+            {
+                NumberDecimalDigits = 2,
+                NumberDecimalSeparator = ",",
+                NumberGroupSeparator = string.Empty,
+            };
+
+            plotCulture.DateTimeFormat = dateTimeFormat;
+            plotCulture.NumberFormat = numberFormat;
+        }
+
+        private static PlotData CreatePlotData(DateTime date, IEnumerable<ReportData> dailyReport)
+        {
+            var deaths = dailyReport.Sum(i => i.Deaths);
+            var recovered = dailyReport.Sum(i => i.Recovered);
+            var confirmed = dailyReport.Sum(i => i.Confirmed);
+            var existing = confirmed - recovered - deaths;
 
             return new PlotData
             {
@@ -118,42 +121,28 @@
             };
         }
 
-        private static void CreatePlot(List<PlotData> plotDataList, string label, string file)
+        private static void CreatePlot(List<PlotData> plotDataset, string label, string file)
         {
-            var start = plotDataList.First().Date.ToOADate();
-            var plt = new ScottPlot.Plot(1000, 500);
-            plt.PlotSignal(
-                plotDataList.Select(pd => (double)pd.Existing).ToArray(),
-                sampleRate: 1,
-                xOffset: start,
-                color: Color.Orange,
-                label: "Existing");
+            var start = plotDataset.First().Date.ToOADate();
+            var plt = new Plot(1000, 500);
 
-            plt.PlotSignal(
-                plotDataList.Select(pd => (double)pd.Confirmed).ToArray(),
-                sampleRate: 1,
-                xOffset: start,
-                color: Color.Red,
-                label: "Confirmed");
+            void CreatePlotSignal(Func<PlotData, int> getValue, string label, Color color)
+                => plt.PlotSignal(
+                    plotDataset.Select(pd => (double)getValue(pd)).ToArray(),
+                    sampleRate: 1,
+                    xOffset: start,
+                    color: color,
+                    label: label);
 
-            plt.PlotSignal(
-                plotDataList.Select(pd => (double)pd.Recovered).ToArray(),
-                sampleRate: 1,
-                xOffset: start,
-                color: Color.Green,
-                label: "Recovered");
-
-            plt.PlotSignal(
-                plotDataList.Select(pd => (double)pd.Deaths).ToArray(),
-                sampleRate: 1,
-                xOffset: start,
-                color: Color.Black,
-                label: "Dead");
+            CreatePlotSignal(pd => pd.Existing, "Existing", Color.Orange);
+            CreatePlotSignal(pd => pd.Confirmed, "Confirmed", Color.Red);
+            CreatePlotSignal(pd => pd.Recovered, "Recovered", Color.Green);
+            CreatePlotSignal(pd => pd.Deaths, "Dead", Color.Black);
 
             plt.Ticks(
-                dateTimeX: true,
-                useExponentialNotation: false,
-                useMultiplierNotation: false,
+                dateTimeX: true, // horizontal axis is a datetime axis
+                useExponentialNotation: false, // do not sho exponents on large numbers
+                useMultiplierNotation: false, // do not show a common muliplier on top
                 useOffsetNotation: false);
 
             plt.Title(label);
@@ -161,8 +150,8 @@
             plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
             plt.TightenLayout(render: true);
-            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 30);
-            plt.Axis(y2: plotDataList.Max(pd => pd.Confirmed) * 1.03);
+            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 40);
+            plt.Axis(y2: plotDataset.Max(pd => pd.Confirmed) * 1.03);
             plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
 
             plt.SetCulture(plotCulture);
