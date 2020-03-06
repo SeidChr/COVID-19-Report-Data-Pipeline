@@ -66,12 +66,10 @@
 
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
-            var plotDataRegional = new Dictionary<string, List<PlotData>>
-            {
-                ["Germany"] = new List<PlotData>(),
-                ["Italy"] = new List<PlotData>(),
-            };
+            string[] plotRegions = { "Germany", "Italy", "US" };
+            var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
+            DateTime lastDate = default;
             foreach (var fileInfo in orderedFiles)
             {
                 System.Console.WriteLine($"Processing {fileInfo.Date:dd-MM-yyyy}");
@@ -86,15 +84,17 @@
                 }
 
                 plotDataListGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
+
+                lastDate = fileInfo.Date;
             }
 
-            CreatePlot(plotDataListGlobal, "COVID-19 Cases", "plot.png");
+            CreatePlot(plotDataListGlobal, $"COVID-19 Cases // GLOBAL // {lastDate:dd-MM-yyy}", "plot.png");
 
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
-                    $"COVID-19 Cases {region}",
+                    $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyy}",
                     $"plot-{region.ToLower().Replace(" ", string.Empty)}.png");
             }
         }
