@@ -66,7 +66,7 @@
 
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
-            string[] plotRegions = { "Germany", "Italy", "US" };
+            string[] plotRegions = { "Germany", "Italy", "US", "South Korea", "Iran", "France", "Netherlands" };
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
             DateTime lastDate = default;
@@ -161,8 +161,9 @@
             plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
             plt.TightenLayout(render: true);
-            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30);
+            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 30);
             plt.Axis(y2: plotDataList.Max(pd => pd.Confirmed) * 1.03);
+            plt.Style(ScottPlot.Style.Light2);
 
             plt.SetCulture(plotCulture);
 
