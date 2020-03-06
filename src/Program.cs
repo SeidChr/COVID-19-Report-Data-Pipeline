@@ -59,7 +59,7 @@ namespace Corona
             DateTime lastDate = default;
             foreach (var fileInfo in orderedFiles)
             {
-                System.Console.WriteLine($"Processing {fileInfo.Date:dd-MM-yyyy}");
+                System.Console.WriteLine($"Processing {fileInfo.Date:yyyy-MM-dd}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
                 var dailyReport = csvEngine.ReadStringAsList(fileData.Contents);
@@ -75,13 +75,13 @@ namespace Corona
                 lastDate = fileInfo.Date;
             }
 
-            CreatePlot(plotDataListGlobal, $"COVID-19 Cases // GLOBAL // {lastDate:dd-MM-yyy}", "plot.png");
+            CreatePlot(plotDataListGlobal, $"COVID-19 Cases // GLOBAL // {lastDate:yyyy-MM-dd}", "plot.png");
 
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
-                    $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyy}",
+                    $"COVID-19 Cases // {region} // {lastDate:yyyy-MM-dd}",
                     $"plot-{region.ToLower().Replace(" ", string.Empty)}.png");
             }
         }
@@ -91,7 +91,7 @@ namespace Corona
             plotCulture = new CultureInfo(string.Empty);
             var dateTimeFormat = new DateTimeFormatInfo
             {
-                ShortDatePattern = "dd-MM-yyyy",
+                ShortDatePattern = "yyyy-MM-dd",
             };
 
             var numberFormat = new NumberFormatInfo
