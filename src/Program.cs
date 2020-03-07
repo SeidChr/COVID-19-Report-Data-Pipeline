@@ -236,22 +236,29 @@ namespace Corona
             string file,
             double minSignal = 0.0)
         {
-            var start = plotDataset.First().Value.First().Date.ToOADate();
+            var orderedPlotDataSet = plotDataset
+                .Select(pd =>
+                {
+                    var signal = pd.Value.Select(pd => (double)getSignal(pd)).ToArray();
+                    return new
+                    {
+                        Label = pd.Key,
+                        Signal = signal,
+                        MaxSignal = signal.Max(),
+                    };
+                })
+                .OrderByDescending(pd => pd.MaxSignal)
+                // avoid cluttering the plot with irrelevant data
+                .Where(group => group.MaxSignal >= minSignal);
+
+            var startDate = plotDataset.First().Value.First().Date.ToOADate();
             var plt = GetDefaultPlot();
 
             double overalMaxValue = 0;
-            foreach (var group in plotDataset)
+            foreach (var group in orderedPlotDataSet)
             {
-                var signal = group.Value.Select(pd => (double)getSignal(pd)).ToArray();
-                var signalMaxValue = signal.Max();
-                if (signalMaxValue < minSignal)
-                {
-                    // avoid cluttering the plot with irrelevant data
-                    continue;
-                }
-
-                overalMaxValue = signalMaxValue > overalMaxValue ? signalMaxValue : overalMaxValue;
-                plt.PlotSignal(signal, sampleRate: 1, xOffset: start, label: group.Key);
+                overalMaxValue = group.MaxSignal > overalMaxValue ? group.MaxSignal : overalMaxValue;
+                plt.PlotSignal(group.Signal, sampleRate: 1, xOffset: startDate, label: group.Label);
             }
 
             plt.Title(label);
