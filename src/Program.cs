@@ -188,8 +188,8 @@ namespace Corona
                 useMultiplierNotation: false, // do not show a common muliplier on top
                 useOffsetNotation: false);
 
-            plt.YLabel("People");
-            plt.XLabel("Date");
+            ////plt.YLabel("People");
+            ////plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
             plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
 
@@ -200,7 +200,10 @@ namespace Corona
 
         private static void FinalizePlot(Plot plt)
         {
-            plt.Layout(yLabelWidth: 40, y2LabelWidth: 20, xLabelHeight: 20, titleHeight: 30);
+            plt.Layout(titleHeight: 40, xLabelHeight: 0);
+            ////yLabelWidth: 40,
+            ////y2LabelWidth: 20,
+            
             ////plt.TightenLayout(render: true);
         }
 
