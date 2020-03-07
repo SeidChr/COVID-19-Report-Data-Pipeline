@@ -6,7 +6,7 @@ namespace Corona.PlotModel
     {
         public DateTime Date { get; set; }
 
-        public int Deaths { get; set; }
+        public int Dead { get; set; }
 
         public int Recovered { get; set; }
 

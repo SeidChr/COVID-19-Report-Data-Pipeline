@@ -63,11 +63,7 @@ namespace Corona
 
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
-            var plotRegions = Const.Regions;
-            ////new string[] {
-            ////    "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
-            ////    "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
-            ////};
+            var plotRegions = RegionFilter.AllRegions;
 
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
@@ -104,29 +100,32 @@ namespace Corona
 
             CreatePlot(
                 plotDataListGlobal,
-                $"COVID-19 Cases // GLOBAL // {lastDate:dd-MM-yyy}",
+                $"COVID-19 Cases // GLOBAL // {lastDate:yyyy-MM-dd}",
                 "plot.png");
 
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
-                    $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyy}",
+                    $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyyy}",
                     $"plot-{region.ToLower().Replace(" ", string.Empty)}.png",
                     MinConfirmed);
             }
 
+            var combinedViewRegionalData = plotDataRegional
+                .Where(pd => !RegionFilter.CombinedPlotRegionExclusions.Contains(pd.Key));
+
             CreateCombinedPlot(
-                plotDataRegional,
+                combinedViewRegionalData,
                 pd => pd.Existing,
-                $"COVID-19 Cases // EXISTING ({MinExisting}+) // {lastDate:dd-MM-yyy}",
+                $"COVID-19 Cases // EXISTING ({MinExisting}+) // {lastDate:yyyy-MM-dd}",
                 "plot-existing.png",
                 MinExisting);
 
             CreateCombinedPlot(
-                plotDataRegional,
-                pd => pd.Deaths,
-                $"COVID-19 Cases // DEAD ({MinDead}+) // {lastDate:dd-MM-yyy}",
+                combinedViewRegionalData,
+                pd => pd.Dead,
+                $"COVID-19 Cases // DEAD ({MinDead}+) // {lastDate:yyyy-MM-dd}",
                 "plot-dead.png",
                 MinDead);
         }
@@ -160,7 +159,7 @@ namespace Corona
             return new PlotData
             {
                 Date = date,
-                Deaths = deaths,
+                Dead = deaths,
                 Confirmed = confirmed,
                 Recovered = recovered,
                 Existing = existing,
@@ -212,10 +211,10 @@ namespace Corona
                     color: color,
                     label: label);
 
-            CreatePlotSignal(pd => pd.Existing, "Existing", Color.Orange);
-            CreatePlotSignal(pd => pd.Confirmed, "Confirmed", Color.Red);
-            CreatePlotSignal(pd => pd.Recovered, "Recovered", Color.Green);
-            CreatePlotSignal(pd => pd.Deaths, "Dead", Color.Black);
+            CreatePlotSignal(pd => pd.Existing, nameof(PlotData.Existing), Color.Orange);
+            CreatePlotSignal(pd => pd.Confirmed, nameof(PlotData.Confirmed), Color.Red);
+            CreatePlotSignal(pd => pd.Recovered, nameof(PlotData.Recovered), Color.Green);
+            CreatePlotSignal(pd => pd.Dead, nameof(PlotData.Dead), Color.Black);
 
             plt.Axis(y2: maxConfirmed * 1.03);
 
@@ -228,7 +227,7 @@ namespace Corona
         }
 
         private static void CreateCombinedPlot(
-            Dictionary<string, List<PlotData>> plotDataset,
+            IEnumerable<KeyValuePair<string, List<PlotData>>> plotDataset,
             Func<PlotData, int> getSignal,
             string label,
             string file,
@@ -253,7 +252,6 @@ namespace Corona
             }
 
             plt.Title(label);
-            Directory.CreateDirectory("plots");
             plt.Axis(y2: overalMaxValue * 1.03);
 
             FinalizePlot(plt);
