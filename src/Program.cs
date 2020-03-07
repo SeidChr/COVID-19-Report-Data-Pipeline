@@ -20,10 +20,13 @@ namespace Corona
     /// </summary>
     public class Program
     {
+        // filter regions for combined plot: existing
         public const int MinExisting = 500;
 
-        public const int MinConfirmed = 500;
+        // filter regions for an own region-plot
+        public const int MinConfirmed = 250;
 
+        // filter regions for combined plot: dead
         public const int MinDead = 10;
 
         private static CultureInfo? plotCulture;
@@ -36,6 +39,7 @@ namespace Corona
         public static async Task Main()
         {
             InitializePlotCluture();
+            Directory.CreateDirectory("plots");
 
             var github = new Github();
             var asyncFiles = await github.GetFileInfoAsync(
@@ -64,7 +68,7 @@ namespace Corona
             //     "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
             //     "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
             // };
-            
+
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
             DateTime lastDate = default;
@@ -83,7 +87,7 @@ namespace Corona
                 {
                     plotDataRegional[region]
                         .Add(CreatePlotData(
-                            fileInfo.Date, 
+                            fileInfo.Date,
                             dailyReport.Where(r => r.Region.Trim() == region)));
                 }
 
@@ -212,7 +216,8 @@ namespace Corona
             plt.Axis(y2: maxConfirmed * 1.03);
 
             plt.Title(label);
-            Directory.CreateDirectory("plots");
+
+            System.Console.WriteLine(file);
             plt.SaveFig("plots/" + file);
         }
 
@@ -244,6 +249,8 @@ namespace Corona
             plt.Title(label);
             Directory.CreateDirectory("plots");
             plt.Axis(y2: overalMaxValue * 1.03);
+
+            System.Console.WriteLine(file);
             plt.SaveFig("plots/" + file);
         }
     }
