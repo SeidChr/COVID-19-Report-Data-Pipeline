@@ -179,13 +179,17 @@ namespace Corona
             plt.YLabel("People");
             plt.XLabel("Date");
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
-            plt.TightenLayout(render: true);
-            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 40);
             plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
 
             plt.SetCulture(plotCulture);
 
             return plt;
+        }
+
+        private static void FinalizePlot(Plot plt)
+        {
+            plt.Layout(yLabelWidth: 40, y2LabelWidth: 20, xLabelHeight: 20, titleHeight: 30);
+            ////plt.TightenLayout(render: true);
         }
 
         private static void CreatePlot(List<PlotData> plotDataset, string label, string file, double minConfirmed = 0.0)
@@ -216,6 +220,8 @@ namespace Corona
             plt.Axis(y2: maxConfirmed * 1.03);
 
             plt.Title(label);
+
+            FinalizePlot(plt);
 
             System.Console.WriteLine(file);
             plt.SaveFig("plots/" + file);
@@ -249,6 +255,8 @@ namespace Corona
             plt.Title(label);
             Directory.CreateDirectory("plots");
             plt.Axis(y2: overalMaxValue * 1.03);
+
+            FinalizePlot(plt);
 
             System.Console.WriteLine(file);
             plt.SaveFig("plots/" + file);
