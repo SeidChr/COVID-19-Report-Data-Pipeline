@@ -23,8 +23,11 @@ namespace Corona
         // filter regions for combined plot: existing
         public const int MinExisting = 500;
 
+        // filter regions for combined plot: confirmed
+        public const int MinConfirmed = 500;
+
         // filter regions for an own region-plot
-        public const int MinConfirmed = 250;
+        public const int MinConfirmedRegionalPlot = 250;
 
         // filter regions for combined plot: dead
         public const int MinDead = 10;
@@ -112,7 +115,7 @@ namespace Corona
                     plotDataRegional[region],
                     GetTitle(region, lastDate),
                     $"plot-{region.ToLower().Replace(" ", string.Empty)}.png",
-                    MinConfirmed);
+                    MinConfirmedRegionalPlot);
             }
 
             var combinedViewRegionalData = plotDataRegional
@@ -124,6 +127,13 @@ namespace Corona
                 GetTitle($"EXISTING ({MinExisting}+)", lastDate),
                 "plot-existing.png",
                 MinExisting);
+
+            CreateCombinedPlot(
+                combinedViewRegionalData,
+                pd => pd.Confirmed,
+                GetTitle($"CONFIRMED ({MinConfirmed}+)", lastDate),
+                "plot-confirmed.png",
+                MinConfirmed);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
@@ -248,7 +258,7 @@ namespace Corona
                     };
                 })
                 .OrderByDescending(pd => pd.MaxSignal)
-                // avoid cluttering the plot with irrelevant data
+                //// avoid cluttering the plot with irrelevant data
                 .Where(group => group.MaxSignal >= minSignal);
 
             var startDate = plotDataset.First().Value.First().Date.ToOADate();
