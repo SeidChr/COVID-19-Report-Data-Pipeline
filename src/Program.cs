@@ -200,7 +200,7 @@ namespace Corona
 
         private static void FinalizePlot(Plot plt)
         {
-            plt.Layout(titleHeight: 40, xLabelHeight: 0);
+            plt.Layout(titleHeight: 40, xLabelHeight: null);
             ////yLabelWidth: 40,
             ////y2LabelWidth: 20,
             
