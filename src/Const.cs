@@ -4,7 +4,7 @@ namespace Corona
 
     public class Const
     {
-        public static List<string> Regions = new List<string>
+        public static List<string> Regions { get; } = new List<string>
         {
             "Afghanistan",
             "Algeria",
@@ -106,7 +106,7 @@ namespace Corona
             "United Arab Emirates",
             "US",
             "Vatican City",
-            "Vietnam"
+            "Vietnam",
         };
     }
 }

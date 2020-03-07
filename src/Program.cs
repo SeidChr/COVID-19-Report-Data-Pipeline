@@ -64,10 +64,10 @@ namespace Corona
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
             var plotRegions = Const.Regions;
-            // new string[] {
-            //     "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
-            //     "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
-            // };
+            ////new string[] {
+            ////    "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
+            ////    "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
+            ////};
 
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
