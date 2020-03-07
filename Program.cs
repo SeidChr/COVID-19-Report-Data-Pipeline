@@ -20,6 +20,12 @@ namespace Corona
     /// </summary>
     public class Program
     {
+        public const int MinExisting = 500;
+
+        public const int MinConfirmed = 500;
+
+        public const int MinDead = 10;
+
         private static CultureInfo? plotCulture;
 
         /// <summary>
@@ -53,16 +59,24 @@ namespace Corona
 
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
-            string[] plotRegions = { "Germany", "Italy", "US", "South Korea", "Iran", "France", "Netherlands" };
+            string[] plotRegions =
+            {
+                "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
+                "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
+            };
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
             DateTime lastDate = default;
+            var regions = new List<string>();
+
             foreach (var fileInfo in orderedFiles)
             {
                 System.Console.WriteLine($"Processing {fileInfo.Date:dd-MM-yyyy}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
                 var dailyReport = csvEngine.ReadStringAsList(fileData.Contents);
+
+                regions.AddRange(dailyReport.Select(report => report.Region));
 
                 foreach (var region in plotDataRegional.Keys)
                 {
@@ -75,15 +89,39 @@ namespace Corona
                 lastDate = fileInfo.Date;
             }
 
-            CreatePlot(plotDataListGlobal, $"COVID-19 Cases // GLOBAL // {lastDate:dd-MM-yyy}", "plot.png");
+            System.Console.WriteLine("All Regions:");
+            System.Console.WriteLine(
+                string.Join(
+                    ", ",
+                    regions.Distinct().Select(region => $"\"{region}\"")));
+
+            CreatePlot(
+                plotDataListGlobal,
+                $"COVID-19 Cases // GLOBAL // {lastDate:dd-MM-yyy}",
+                "plot.png");
 
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
                     $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyy}",
-                    $"plot-{region.ToLower().Replace(" ", string.Empty)}.png");
+                    $"plot-{region.ToLower().Replace(" ", string.Empty)}.png",
+                    MinConfirmed);
             }
+
+            CreateCombinedPlot(
+                plotDataRegional,
+                pd => pd.Existing,
+                $"COVID-19 Cases // EXISTING ({MinExisting}+) // {lastDate:dd-MM-yyy}",
+                "plot-existing.png",
+                MinExisting);
+
+            CreateCombinedPlot(
+                plotDataRegional,
+                pd => pd.Deaths,
+                $"COVID-19 Cases // DEAD ({MinDead}+) // {lastDate:dd-MM-yyy}",
+                "plot-dead.png",
+                MinDead);
         }
 
         private static void InitializePlotCluture()
@@ -122,10 +160,38 @@ namespace Corona
             };
         }
 
-        private static void CreatePlot(List<PlotData> plotDataset, string label, string file)
+        private static Plot GetDefaultPlot()
         {
-            var start = plotDataset.First().Date.ToOADate();
             var plt = new Plot(1000, 500);
+            plt.Ticks(
+                dateTimeX: true, // horizontal axis is a datetime axis
+                useExponentialNotation: false, // do not sho exponents on large numbers
+                useMultiplierNotation: false, // do not show a common muliplier on top
+                useOffsetNotation: false);
+
+            plt.YLabel("People");
+            plt.XLabel("Date");
+            plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
+            plt.TightenLayout(render: true);
+            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 40);
+            plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
+
+            plt.SetCulture(plotCulture);
+
+            return plt;
+        }
+
+        private static void CreatePlot(List<PlotData> plotDataset, string label, string file, double minConfirmed = 0.0)
+        {
+            var maxConfirmed = plotDataset.Max(pd => pd.Confirmed);
+            if (maxConfirmed < minConfirmed)
+            {
+                // avoid printing a graph for countries under threashold
+                return;
+            }
+
+            var plt = GetDefaultPlot();
+            var start = plotDataset.First().Date.ToOADate();
 
             void CreatePlotSignal(Func<PlotData, int> getValue, string label, Color color)
                 => plt.PlotSignal(
@@ -140,24 +206,41 @@ namespace Corona
             CreatePlotSignal(pd => pd.Recovered, "Recovered", Color.Green);
             CreatePlotSignal(pd => pd.Deaths, "Dead", Color.Black);
 
-            plt.Ticks(
-                dateTimeX: true, // horizontal axis is a datetime axis
-                useExponentialNotation: false, // do not sho exponents on large numbers
-                useMultiplierNotation: false, // do not show a common muliplier on top
-                useOffsetNotation: false);
+            plt.Axis(y2: maxConfirmed * 1.03);
 
             plt.Title(label);
-            plt.YLabel("People");
-            plt.XLabel("Date");
-            plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
-            plt.TightenLayout(render: true);
-            plt.Layout(yLabelWidth: 60, y2LabelWidth: 60, xLabelHeight: 30, titleHeight: 40);
-            plt.Axis(y2: plotDataset.Max(pd => pd.Confirmed) * 1.03);
-            plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
-
-            plt.SetCulture(plotCulture);
-
             Directory.CreateDirectory("plots");
+            plt.SaveFig("plots/" + file);
+        }
+
+        private static void CreateCombinedPlot(
+            Dictionary<string, List<PlotData>> plotDataset,
+            Func<PlotData, int> getSignal,
+            string label,
+            string file,
+            double minSignal = 0.0)
+        {
+            var start = plotDataset.First().Value.First().Date.ToOADate();
+            var plt = GetDefaultPlot();
+
+            double overalMaxValue = 0;
+            foreach (var group in plotDataset)
+            {
+                var signal = group.Value.Select(pd => (double)getSignal(pd)).ToArray();
+                var signalMaxValue = signal.Max();
+                if (signalMaxValue < minSignal)
+                {
+                    // avoid cluttering the plot with irrelevant data
+                    continue;
+                }
+
+                overalMaxValue = signalMaxValue > overalMaxValue ? signalMaxValue : overalMaxValue;
+                plt.PlotSignal(signal, sampleRate: 1, xOffset: start, label: group.Key);
+            }
+
+            plt.Title(label);
+            Directory.CreateDirectory("plots");
+            plt.Axis(y2: overalMaxValue * 1.03);
             plt.SaveFig("plots/" + file);
         }
     }
