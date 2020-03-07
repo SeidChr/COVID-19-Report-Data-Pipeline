@@ -59,11 +59,12 @@ namespace Corona
 
             List<PlotData> plotDataListGlobal = new List<PlotData>();
 
-            string[] plotRegions =
-            {
-                "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
-                "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
-            };
+            var plotRegions = Const.Regions;
+            // new string[] {
+            //     "US", "Japan", "South Korea", "France", "Germany", "Italy", "UK",
+            //     "Sweden", "Spain", "Belgium", "Iran", "Switzerland", "Norway", "Netherlands",
+            // };
+            
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
             DateTime lastDate = default;
@@ -81,7 +82,9 @@ namespace Corona
                 foreach (var region in plotDataRegional.Keys)
                 {
                     plotDataRegional[region]
-                        .Add(CreatePlotData(fileInfo.Date, dailyReport.Where(r => r.Region == region)));
+                        .Add(CreatePlotData(
+                            fileInfo.Date, 
+                            dailyReport.Where(r => r.Region.Trim() == region)));
                 }
 
                 plotDataListGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
@@ -93,7 +96,7 @@ namespace Corona
             System.Console.WriteLine(
                 string.Join(
                     ", ",
-                    regions.Distinct().Select(region => $"\"{region}\"")));
+                    regions.Distinct().OrderBy(r => r).Select(region => $"\"{region}\"")));
 
             CreatePlot(
                 plotDataListGlobal,

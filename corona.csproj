@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <DefaultNamespace>Corona</DefaultNamespace>
+    <RootNamespace>Corona</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <Nullable>enable</Nullable>
   </PropertyGroup>
