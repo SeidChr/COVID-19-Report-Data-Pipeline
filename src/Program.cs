@@ -71,7 +71,7 @@ namespace Corona
 
             foreach (var fileInfo in orderedFiles)
             {
-                System.Console.WriteLine($"Processing {fileInfo.Date:dd-MM-yyyy}");
+                System.Console.WriteLine($"Processing {fileInfo.Date:yyyy-MM-dd}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
                 var dailyReport = csvEngine.ReadStringAsList(fileData.Contents);
@@ -129,7 +129,7 @@ namespace Corona
             plotCulture = new CultureInfo(string.Empty);
             var dateTimeFormat = new DateTimeFormatInfo
             {
-                ShortDatePattern = "dd-MM-yyyy",
+                ShortDatePattern = "yyyy-MM-dd",
             };
 
             var numberFormat = new NumberFormatInfo
