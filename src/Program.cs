@@ -98,16 +98,19 @@ namespace Corona
                     ", ",
                     regions.Distinct().OrderBy(r => r).Select(region => $"\"{region}\"")));
 
+            static string GetTitle(string label, DateTime date) 
+                => $"COVID-19 Cases // {label} // {date:yyyy-MM-dd}";
+
             CreatePlot(
                 plotDataListGlobal,
-                $"COVID-19 Cases // GLOBAL // {lastDate:yyyy-MM-dd}",
+                GetTitle("GLOBAL", lastDate),
                 "plot.png");
 
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
-                    $"COVID-19 Cases // {region} // {lastDate:dd-MM-yyyy}",
+                    GetTitle(region, lastDate),
                     $"plot-{region.ToLower().Replace(" ", string.Empty)}.png",
                     MinConfirmed);
             }
@@ -118,14 +121,14 @@ namespace Corona
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Existing,
-                $"COVID-19 Cases // EXISTING ({MinExisting}+) // {lastDate:yyyy-MM-dd}",
+                GetTitle($"EXISTING ({MinExisting}+)", lastDate),
                 "plot-existing.png",
                 MinExisting);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Dead,
-                $"COVID-19 Cases // DEAD ({MinDead}+) // {lastDate:yyyy-MM-dd}",
+                GetTitle($"DEAD ({MinDead}+)", lastDate),
                 "plot-dead.png",
                 MinDead);
         }
