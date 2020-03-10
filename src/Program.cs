@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace Corona
 {
     using System;
@@ -25,6 +25,9 @@ namespace Corona
 
         // filter regions for combined plot: confirmed
         public const int MinConfirmed = 500;
+
+        // filter regions for combined plot: confirmed
+        public const int MinRecovered = 500;
 
         // filter regions for an own region-plot
         public const int MinConfirmedRegionalPlot = 250;
@@ -109,6 +112,11 @@ namespace Corona
                 GetTitle("GLOBAL", lastDate),
                 "plot.png");
 
+            // CreateAveragePlot(
+            //     plotDataRegional,
+            //     GetTitle($"GLOBAL AVERAGE", lastDate),
+            //     "plot-avg.png");
+
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
@@ -121,24 +129,36 @@ namespace Corona
             var combinedViewRegionalData = plotDataRegional
                 .Where(pd => !RegionFilter.CombinedPlotRegionExclusions.Contains(pd.Key));
 
+            CreateAveragePlot(
+                combinedViewRegionalData,
+                GetTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
+                "plot-avg.png");
+
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Existing,
-                GetTitle($"EXISTING ({MinExisting}+)", lastDate),
+                GetTitle($"EXISTING ({MinExisting}+, wo. China)", lastDate),
                 "plot-existing.png",
                 MinExisting);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Confirmed,
-                GetTitle($"CONFIRMED ({MinConfirmed}+)", lastDate),
+                GetTitle($"CONFIRMED ({MinConfirmed}+, wo. China)", lastDate),
                 "plot-confirmed.png",
                 MinConfirmed);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
+                pd => pd.Recovered,
+                GetTitle($"RECOVERED ({MinRecovered}+, wo. China)", lastDate),
+                "plot-recovered.png",
+                MinConfirmed);
+
+            CreateCombinedPlot(
+                combinedViewRegionalData,
                 pd => pd.Dead,
-                GetTitle($"DEAD ({MinDead}+)", lastDate),
+                GetTitle($"DEAD ({MinDead}+, wo. China)", lastDate),
                 "plot-dead.png",
                 MinDead);
         }
@@ -198,13 +218,16 @@ namespace Corona
             return plt;
         }
 
-        private static void FinalizePlot(Plot plt)
+        private static void FinalizePlot(Plot plt, string file)
         {
             plt.Layout(titleHeight: 40, xLabelHeight: null);
             ////yLabelWidth: 40,
             ////y2LabelWidth: 20,
             
             ////plt.TightenLayout(render: true);
+
+            System.Console.WriteLine(file);
+            plt.SaveFig("plots/" + file);
         }
 
         private static void CreatePlot(List<PlotData> plotDataset, string label, string file, double minConfirmed = 0.0)
@@ -236,10 +259,7 @@ namespace Corona
 
             plt.Title(label);
 
-            FinalizePlot(plt);
-
-            System.Console.WriteLine(file);
-            plt.SaveFig("plots/" + file);
+            FinalizePlot(plt, file);
         }
 
         private static void CreateCombinedPlot(
@@ -277,10 +297,53 @@ namespace Corona
             plt.Title(label);
             plt.Axis(y2: overalMaxValue * 1.03);
 
-            FinalizePlot(plt);
+            FinalizePlot(plt, file);
+        }
 
-            System.Console.WriteLine(file);
-            plt.SaveFig("plots/" + file);
+        private static void CreateAveragePlot(
+            IEnumerable<KeyValuePair<string, List<PlotData>>> plotDataset,
+            string label,
+            string file)
+        {
+            double[] CreateAveragePlotSignal(Func<PlotData, int> getValue)
+                => plotDataset
+                .Select(pd => pd.Value.Select(pd => (double)getValue(pd)))
+                .Rows()
+                .Select(r => r.ToList().Average())
+                .ToArray();
+
+            var avgExistingSignal = CreateAveragePlotSignal(pd => pd.Existing);
+            var avgRecoveredSignal = CreateAveragePlotSignal(pd => pd.Recovered);
+            var avgConfirmedSignal = CreateAveragePlotSignal(pd => pd.Confirmed);
+            var avgDeadSignal = CreateAveragePlotSignal(pd => pd.Dead);
+
+            var maxSignal = Enumerable.Empty<double>()
+                .Concat(avgConfirmedSignal)
+                .Concat(avgRecoveredSignal)
+                .Concat(avgExistingSignal)
+                .Concat(avgDeadSignal)
+                .Max();
+
+            var startDate = plotDataset.First().Value.First().Date.ToOADate();
+            var plt = GetDefaultPlot();
+
+            void PlotAvgSignal(double[] signal, string label, Color color)
+                => plt.PlotSignal(
+                    signal,
+                    sampleRate: 1,
+                    xOffset: startDate,
+                    color: color,
+                    label: "AVG " + label);
+
+            PlotAvgSignal(avgExistingSignal, nameof(PlotData.Existing), Color.Orange);
+            PlotAvgSignal(avgConfirmedSignal, nameof(PlotData.Confirmed), Color.Red);
+            PlotAvgSignal(avgRecoveredSignal, nameof(PlotData.Recovered), Color.Green);
+            PlotAvgSignal(avgDeadSignal, nameof(PlotData.Dead), Color.Black);
+
+            plt.Title(label);
+            plt.Axis(y2: maxSignal * 1.03);
+
+            FinalizePlot(plt, file);
         }
     }
 }
