@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace Corona
 {
     using System;
@@ -33,7 +33,7 @@ namespace Corona
         public const int MinConfirmedRegionalPlot = 250;
 
         // filter regions for combined plot: dead
-        public const int MinDead = 10;
+        public const int MinDead = 50;
 
         private static CultureInfo? plotCulture;
 
