@@ -33,7 +33,7 @@ namespace Corona
         public const int MinConfirmedRegionalPlot = 250;
 
         // filter regions for combined plot: dead
-        public const int MinDead = 10;
+        public const int MinDead = 50;
 
         private static CultureInfo? plotCulture;
 
@@ -74,7 +74,7 @@ namespace Corona
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
 
             DateTime lastDate = default;
-            var regions = new List<string>();
+            var allRegions = new List<string>();
 
             foreach (var fileInfo in orderedFiles)
             {
@@ -83,7 +83,17 @@ namespace Corona
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
                 var dailyReport = csvEngine.ReadStringAsList(fileData.Contents);
 
-                regions.AddRange(dailyReport.Select(report => report.Region));
+                // collect all regons to print them
+                allRegions.AddRange(dailyReport.Select(report => report.Region));
+
+                // revert aliased names
+                foreach (var reportData in dailyReport) 
+                {
+                    if (RegionFilter.Aliases.ContainsKey(reportData.Region)) 
+                    {
+                        reportData.Region = RegionFilter.Aliases[reportData.Region];
+                    }
+                }
 
                 foreach (var region in plotDataRegional.Keys)
                 {
@@ -98,11 +108,23 @@ namespace Corona
                 lastDate = fileInfo.Date;
             }
 
-            System.Console.WriteLine("All Regions:");
-            System.Console.WriteLine(
-                string.Join(
+            static void PrintRegionList(string label, IEnumerable<string> printRegions) 
+            {
+                System.Console.WriteLine(label + ":");
+                System.Console.WriteLine(string.Join(
                     ", ",
-                    regions.Distinct().OrderBy(r => r).Select(region => $"\"{region}\"")));
+                    printRegions
+                        .Distinct()
+                        .OrderBy(r => r)
+                        .Select(r => $"\"{r}\"")));
+            }
+
+            PrintRegionList("All Regions", allRegions);
+            PrintRegionList(
+                "Unknown Regions", 
+                allRegions.Where(r 
+                    => !RegionFilter.AllRegions.Contains(r)
+                    && !RegionFilter.Aliases.ContainsKey(r)));
 
             static string GetTitle(string label, DateTime date) 
                 => $"COVID-19 Cases // {label} // {date:yyyy-MM-dd}";
