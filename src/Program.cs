@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace Corona
 {
     using System;
@@ -134,10 +134,10 @@ namespace Corona
                 GetTitle("GLOBAL", lastDate),
                 "plot.png");
 
-            // CreateAveragePlot(
-            //     plotDataRegional,
-            //     GetTitle($"GLOBAL AVERAGE", lastDate),
-            //     "plot-avg.png");
+            //// CreateAveragePlot(
+            ////     plotDataRegional,
+            ////     GetTitle($"GLOBAL AVERAGE", lastDate),
+            ////     "plot-avg.png");
 
             foreach (var region in plotDataRegional.Keys)
             {

@@ -28,8 +28,9 @@ namespace Corona
 
         public const string StMartinRegionName = "Saint Martin";
 
-        public static Dictionary<string, string> Aliases 
-            = new Dictionary<string, string> {
+        public static Dictionary<string, string> Aliases { get; } 
+            = new Dictionary<string, string> 
+            {
                 ["Republic of Korea"] = IranRegionName,
                 ["Republic of Ireland"] = IrelandRegionName,
                 ["Republic of Moldova"] = MoldovaRegionName,
