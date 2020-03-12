@@ -6,7 +6,7 @@ namespace Corona
     {
         public const string OthersRegionName = "Others";
 
-        public const string ChinaRegionName = "Mainland China";
+        public const string ChinaRegionName = "China";
 
         public const string IranRegionName = "Iran";
 
@@ -28,21 +28,41 @@ namespace Corona
 
         public const string StMartinRegionName = "Saint Martin";
 
+        public const string CongoRegionName = "Congo";
+
+        public const string CzechiaRegionName = "Czech Republic";
+
+        private const string UkRegionName = "UK";
+        
+        private const string TaiwanRegionName = "Taiwan";
+
         public static Dictionary<string, string> Aliases { get; } 
             = new Dictionary<string, string> 
             {
-                ["Republic of Korea"] = IranRegionName,
+                ["Republic of Korea"] = KoreaRegionName,
+                ["Korea, South"] = KoreaRegionName,
+
+                ["Mainland China"] = ChinaRegionName,
+
+                ["Cruise Ship"] = OthersRegionName,
+                ["Reunion"] = OthersRegionName,
+
                 ["Republic of Ireland"] = IrelandRegionName,
                 ["Republic of Moldova"] = MoldovaRegionName,
                 ["Iran (Islamic Republic of)"] = IranRegionName,
-                ["Republic of Korea"] = KoreaRegionName,
                 ["Hong Kong SAR"] = HongKongRegionName, 
                 [" Azerbaijan"] = AzerbaijanRegionName,
                 ["Vietnam"] = VietNamRegionName,
                 ["Macao SAR"] = MacauRegionName,
                 ["Russian Federation"] = RussiaRegionName,
                 ["St. Martin"] = StMartinRegionName,
+                ["Congo (Kinshasa)"] = CongoRegionName,
+                ["Czechia"] = CzechiaRegionName,
+                ["Taiwan*"] = TaiwanRegionName,
+                ["United Kingdom"] = UkRegionName,
             };
+        
+        /// 20200312: "Bolivia", "China", "Congo (Kinshasa)", "Cote d'Ivoire", "Cruise Ship", "Czechia", "Honduras", "Jamaica", "Korea, South", "Reunion", "Taiwan*", "Turkey", "United Kingdom"
 
         public static List<string> AllRegions { get; }
             = new List<string>
@@ -61,6 +81,7 @@ namespace Corona
                 "Belarus",
                 "Belgium",
                 "Bhutan",
+                "Bolivia",
                 "Bosnia and Herzegovina",
                 "Brazil",
                 "Brunei",
@@ -72,10 +93,12 @@ namespace Corona
                 "Channel Islands",
                 "Chile",
                 "Colombia",
+                CongoRegionName,
                 "Costa Rica",
+                "Cote d'Ivoire",
                 "Croatia",
                 "Cyprus",
-                "Czech Republic",
+                CzechiaRegionName,
                 "Denmark",
                 "Dominican Republic",
                 "Ecuador",
@@ -90,6 +113,7 @@ namespace Corona
                 "Gibraltar",
                 "Greece",
                 "Holy See",
+                "Honduras",
                 HongKongRegionName,
                 "Hungary",
                 "Iceland",
@@ -101,6 +125,7 @@ namespace Corona
                 "Israel",
                 "Italy",
                 "Ivory Coast",
+                "Jamaica",
                 "Japan",
                 "Jordan",
                 "Kuwait",
@@ -157,11 +182,12 @@ namespace Corona
                 "Sweden",
                 "Switzerland",
                 "Taipei and environs",
-                "Taiwan",
+                TaiwanRegionName,
                 "Thailand",
                 "Togo",
                 "Tunisia",
-                "UK",
+                "Turkey",
+                UkRegionName,
                 "Ukraine",
                 "United Arab Emirates",
                 "US",
