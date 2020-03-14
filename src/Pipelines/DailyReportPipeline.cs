@@ -184,9 +184,9 @@ namespace Corona
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Recovered,
-                GetCombinedTitle($"RECOVERED", lastDate, MinConfirmed, MaxSignalsPerCombinedPlot, "wo. China"),
+                GetCombinedTitle($"RECOVERED", lastDate, MinRecovered, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-recovered.png",
-                MinConfirmed, 
+                MinRecovered, 
                 MaxSignalsPerCombinedPlot);
 
             CreateCombinedPlot(
