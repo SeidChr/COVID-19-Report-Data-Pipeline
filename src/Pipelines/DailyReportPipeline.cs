@@ -21,10 +21,10 @@ namespace Corona
     public class DailyReportPipeline
     {
         // filter regions for combined plot: existing
-        public const int MinExisting = 500;
+        public const int MinExisting = 1000;
 
         // filter regions for combined plot: confirmed
-        public const int MinConfirmed = 500;
+        public const int MinConfirmed = 1000;
 
         // filter regions for combined plot: confirmed
         public const int MinRecovered = 500;
@@ -33,7 +33,9 @@ namespace Corona
         public const int MinConfirmedRegionalPlot = 250;
 
         // filter regions for combined plot: dead
-        public const int MinDead = 50;
+        public const int MinDead = 10;
+
+        public const int MaxSignalsPerCombinedPlot = 25;
 
         private static CultureInfo? plotCulture;
 
@@ -130,22 +132,28 @@ namespace Corona
             static string GetTitle(string label, DateTime date) 
                 => $"COVID-19 Cases // {label} // {date:yyyy-MM-dd}";
 
+            static string GetCombinedTitle(string label, DateTime date, int minSignal, int maxSignals, string braceSuffix) 
+                => $"COVID-19 Cases // {label} ({minSignal}+, {braceSuffix}) // {date:yyyy-MM-dd}";
+
             CreatePlot(
                 plotDataListGlobal,
                 GetTitle("GLOBAL", lastDate),
-                "plot.png");
+                "plot-global.png");
 
             //// CreateAveragePlot(
             ////     plotDataRegional,
             ////     GetTitle($"GLOBAL AVERAGE", lastDate),
             ////     "plot-avg.png");
 
+            string FilterRegionChars(string region) 
+                => Regex.Replace(region.ToLower(), @"\W", string.Empty);
+
             foreach (var region in plotDataRegional.Keys)
             {
                 CreatePlot(
                     plotDataRegional[region],
                     GetTitle(region, lastDate),
-                    $"plot-{region.ToLower().Replace(" ", string.Empty)}.png",
+                    $"plot-{FilterRegionChars(region)}.png",
                     MinConfirmedRegionalPlot);
             }
 
@@ -155,35 +163,39 @@ namespace Corona
             CreateAveragePlot(
                 combinedViewRegionalData,
                 GetTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
-                "plot-avg.png");
+                "plot-average.png");
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Existing,
-                GetTitle($"EXISTING ({MinExisting}+, wo. China)", lastDate),
+                GetCombinedTitle($"EXISTING", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-existing.png",
-                MinExisting);
+                MinExisting, 
+                MaxSignalsPerCombinedPlot);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Confirmed,
-                GetTitle($"CONFIRMED ({MinConfirmed}+, wo. China)", lastDate),
+                GetCombinedTitle($"CONFIRMED", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-confirmed.png",
-                MinConfirmed);
+                MinConfirmed, 
+                MaxSignalsPerCombinedPlot);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Recovered,
-                GetTitle($"RECOVERED ({MinRecovered}+, wo. China)", lastDate),
+                GetCombinedTitle($"RECOVERED", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-recovered.png",
-                MinConfirmed);
+                MinConfirmed, 
+                MaxSignalsPerCombinedPlot);
 
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Dead,
-                GetTitle($"DEAD ({MinDead}+, wo. China)", lastDate),
+                GetCombinedTitle($"DEAD", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-dead.png",
-                MinDead);
+                MinDead, 
+                MaxSignalsPerCombinedPlot);
         }
 
         private static void InitializePlotCluture()
@@ -191,7 +203,7 @@ namespace Corona
             plotCulture = new CultureInfo(string.Empty);
             var dateTimeFormat = new DateTimeFormatInfo
             {
-                ShortDatePattern = "yyyy-MM-dd",
+                ShortDatePattern = "MM-dd",
             };
 
             var numberFormat = new NumberFormatInfo
@@ -231,8 +243,9 @@ namespace Corona
                 useMultiplierNotation: false, // do not show a common muliplier on top
                 useOffsetNotation: false);
 
-            ////plt.YLabel("People");
+            plt.XLabel("github/SeidChr/COVID-19-Report-Data-Pipeline", fontSize: 12);
             ////plt.XLabel("Date");
+            
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
             plt.Style(figBg: ColorTranslator.FromHtml("#ededed"));
 
@@ -243,7 +256,8 @@ namespace Corona
 
         private static void FinalizePlot(Plot plt, string file)
         {
-            plt.Layout(titleHeight: 40, xLabelHeight: null);
+            plt.Layout(titleHeight: 40, xLabelHeight: 30);
+            ////plt.AxisAuto(horizontalMargin: 0.5, verticalMargin: 0.5);
             ////yLabelWidth: 40,
             ////y2LabelWidth: 20,
             
@@ -290,7 +304,8 @@ namespace Corona
             Func<PlotData, int> getSignal,
             string label,
             string file,
-            double minSignal = 0.0)
+            double minSignal = 0.0,
+            int maxSignals = 20)
         {
             var orderedPlotDataSet = plotDataset
                 .Select(pd =>
@@ -305,7 +320,8 @@ namespace Corona
                 })
                 .OrderByDescending(pd => pd.MaxSignal)
                 //// avoid cluttering the plot with irrelevant data
-                .Where(group => group.MaxSignal >= minSignal);
+                .Where(group => group.MaxSignal >= minSignal)
+                .Take(maxSignals);
 
             var startDate = plotDataset.First().Value.First().Date.ToOADate();
             var plt = GetDefaultPlot();
