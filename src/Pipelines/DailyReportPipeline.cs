@@ -176,7 +176,7 @@ namespace Corona
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Confirmed,
-                GetCombinedTitle($"CONFIRMED", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
+                GetCombinedTitle($"CONFIRMED", lastDate, MinConfirmed, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-confirmed.png",
                 MinConfirmed, 
                 MaxSignalsPerCombinedPlot);
@@ -184,7 +184,7 @@ namespace Corona
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Recovered,
-                GetCombinedTitle($"RECOVERED", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
+                GetCombinedTitle($"RECOVERED", lastDate, MinConfirmed, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-recovered.png",
                 MinConfirmed, 
                 MaxSignalsPerCombinedPlot);
@@ -192,7 +192,7 @@ namespace Corona
             CreateCombinedPlot(
                 combinedViewRegionalData,
                 pd => pd.Dead,
-                GetCombinedTitle($"DEAD", lastDate, MinExisting, MaxSignalsPerCombinedPlot, "wo. China"),
+                GetCombinedTitle($"DEAD", lastDate, MinDead, MaxSignalsPerCombinedPlot, "wo. China"),
                 "plot-dead.png",
                 MinDead, 
                 MaxSignalsPerCombinedPlot);
