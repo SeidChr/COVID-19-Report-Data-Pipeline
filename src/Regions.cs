@@ -1,8 +1,10 @@
 namespace Corona
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
-    public class RegionFilter
+    public class Regions
     {
         public const string OthersRegionName = "Others";
 
@@ -33,11 +35,13 @@ namespace Corona
         public const string CzechiaRegionName = "Czechia";
 
         private const string UkRegionName = "UK";
-        
+
         private const string TaiwanRegionName = "Taiwan";
 
-        public static Dictionary<string, string> Aliases { get; } 
-            = new Dictionary<string, string> 
+        private const string StVincentRegionName = "Saint Vincent";
+
+        public static Dictionary<string, string> Aliases { get; }
+            = new Dictionary<string, string>
             {
                 ["Republic of Korea"] = KoreaRegionName,
                 ["Korea, South"] = KoreaRegionName,
@@ -49,7 +53,7 @@ namespace Corona
                 ["Republic of Ireland"] = IrelandRegionName,
                 ["Republic of Moldova"] = MoldovaRegionName,
                 ["Iran (Islamic Republic of)"] = IranRegionName,
-                ["Hong Kong SAR"] = HongKongRegionName, 
+                ["Hong Kong SAR"] = HongKongRegionName,
                 [" Azerbaijan"] = AzerbaijanRegionName,
                 ["Vietnam"] = VietNamRegionName,
                 ["Macao SAR"] = MacauRegionName,
@@ -59,6 +63,7 @@ namespace Corona
                 ["Czech Republic"] = CzechiaRegionName,
                 ["Taiwan*"] = TaiwanRegionName,
                 ["United Kingdom"] = UkRegionName,
+                ["Saint Vincent and the Grenadines"] = StVincentRegionName,
             };
 
         /// <summary>
@@ -69,8 +74,13 @@ namespace Corona
         /// 20200314: "Antigua and Barbuda", "Aruba", "Cayman Islands", "Cuba", 
         ///           "Ethiopia", "Guadeloupe", "Guinea", "Guyana", "Kazakhstan", 
         ///           "Kenya", "Sudan"
+        /// 
+        /// 20200315: "Curacao", "Eswatini", "Gabon", "Ghana", "Guatemala", 
+        ///           "Guernsey", "Jersey", "Mauritania", "Namibia", "Rwanda", 
+        ///           "Saint Lucia", "Saint Vincent and the Grenadines", "Seychelles", 
+        ///           "Suriname", "Trinidad and Tobago", "Uruguay", "Venezuela"
         /// </summary>
-        public static List<string> AllRegions { get; }
+        public static List<string> All { get; }
             = new List<string>
             {
                 "Afghanistan",
@@ -110,6 +120,7 @@ namespace Corona
                 "Cote d'Ivoire",
                 "Croatia",
                 "Cuba",
+                "Curacao",
                 "Cyprus",
                 CzechiaRegionName,
 
@@ -119,6 +130,7 @@ namespace Corona
                 "Ecuador",
                 "Egypt",
                 "Estonia",
+                "Eswatini",
                 "Ethiopia",
 
                 "Faroe Islands",
@@ -126,11 +138,15 @@ namespace Corona
                 "France",
                 "French Guiana",
 
+                "Gabon",
                 "Georgia",
                 "Germany",
+                "Ghana",
                 "Gibraltar",
                 "Greece",
                 "Guadeloupe",
+                "Guatemala",
+                "Guernsey",
                 "Guyana",
                 "Guinea",
 
@@ -151,12 +167,14 @@ namespace Corona
 
                 "Jamaica",
                 "Japan",
+                "Jersey",
                 "Jordan",
 
+                KoreaRegionName,
                 "Kazakhstan",
                 "Kenya",
                 "Kuwait",
-                
+
                 "Latvia",
                 "Lebanon",
                 "Liechtenstein",
@@ -168,12 +186,14 @@ namespace Corona
                 "Maldives",
                 "Malta",
                 "Martinique",
+                "Mauritania",
                 "Mexico",
                 MoldovaRegionName,
                 "Monaco",
                 "Mongolia",
                 "Morocco",
 
+                "Namibia",
                 "Nepal",
                 "Netherlands",
                 "New Zealand",
@@ -199,21 +219,25 @@ namespace Corona
                 "Reunion",
                 "Romania",
                 RussiaRegionName,
+                "Rwanda",
 
+                StVincentRegionName,
+                StMartinRegionName,
                 "Saint Barthelemy",
-                "Saint Martin",
+                "Saint Lucia",
                 "San Marino",
                 "Saudi Arabia",
                 "Senegal",
                 "Serbia",
+                "Seychelles",
                 "Singapore",
                 "Slovakia",
                 "Slovenia",
                 "South Africa",
-                KoreaRegionName,
                 "Spain",
                 "Sri Lanka",
                 "Sudan",
+                "Suriname",
                 "Sweden",
                 "Switzerland",
 
@@ -221,15 +245,18 @@ namespace Corona
                 TaiwanRegionName,
                 "Thailand",
                 "Togo",
+                "Trinidad and Tobago",
                 "Tunisia",
                 "Turkey",
 
                 UkRegionName,
                 "Ukraine",
                 "United Arab Emirates",
+                "Uruguay",
                 "US",
 
                 "Vatican City",
+                "Venezuela",
                 VietNamRegionName,
             };
 
@@ -239,5 +266,27 @@ namespace Corona
                 ChinaRegionName,
                 OthersRegionName,
             };
+
+        public static void CompareWithFoundRegions(List<string> foundRegions)
+        {
+            static void PrintRegionList(string label, IEnumerable<string> printRegions)
+            {
+                System.Console.WriteLine(label + ":");
+                System.Console.WriteLine(string.Join(
+                    ", ",
+                    printRegions
+                        .Distinct()
+                        .OrderBy(r => r)
+                        .Select(r => $"\"{r}\"")));
+            }
+
+            PrintRegionList("Found Regions", foundRegions);
+
+            PrintRegionList(
+                "Unknown Regions",
+                foundRegions.Where(r
+                    => !All.Contains(r)
+                    && !Aliases.ContainsKey(r)));
+        }
     }
 }

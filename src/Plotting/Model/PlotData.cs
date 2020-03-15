@@ -1,4 +1,4 @@
-namespace Corona.PlotModel
+namespace Corona.Plotting.Model
 {
     using System;
 
