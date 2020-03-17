@@ -8,6 +8,7 @@ namespace Plotting
     using Corona.Plotting.Model;
     using Corona.Shared;
     using ScottPlot;
+    using ScottPlot.Config;
 
     public class Plotter
     {
@@ -171,6 +172,7 @@ namespace Plotting
                 useExponentialNotation: false, // do not sho exponents on large numbers
                 useMultiplierNotation: false, // do not show a common muliplier on top
                 useOffsetNotation: false);
+                ////xTickRotation: 90
 
             plt.XLabel("github/SeidChr/COVID-19-Report-Data-Pipeline", fontSize: 12);
             ////plt.XLabel("Date");
@@ -196,7 +198,7 @@ namespace Plotting
 
             ////plt.TightenLayout(render: true);
 
-            plt.Grid(xSpacing: 0.5);
+            plt.Grid(xSpacingDateTimeUnit: DateTimeUnit.Day, xSpacing: 7);
 
             // System.Console.WriteLine(file);
             plt.SaveFig(this.directory + "/" + file);
