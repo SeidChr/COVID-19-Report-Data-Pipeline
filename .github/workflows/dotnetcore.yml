@@ -14,8 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install AzCopy
-      uses: kheiakiyama/install-azcopy-action@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -30,18 +28,21 @@ jobs:
         name: plots
         path: plots
 
+    - name: Install AzCopy
+      uses: kheiakiyama/install-azcopy-action@v1
+      
     - name: Clear plot directory
       # azcopy rm "https://[account].blob.core.windows.net/[container]/[path/to/directory]?[SAS]"
       #  --recursive=true --include="*.jpg;*.pdf;exactName"
       run: >-
-        /opt/hostedtoolcache/azcopy/v10/x64/azcopy_linux_amd64_10.3.4/azcopy 
+        azcopy_v10 
         rm '${{ secrets.azureWebBlob }}/*${{ secrets.azureWebBlobSAS }}'
-
+              
     - name: Publish plot
       # https://docs.microsoft.com/de-de/azure/storage/common/storage-ref-azcopy-copy
       # alias azcp=/opt/hostedtoolcache/azcopy/v10/x64/azcopy_linux_amd64_10.3.4/azcopy
       run: >-
-        /opt/hostedtoolcache/azcopy/v10/x64/azcopy_linux_amd64_10.3.4/azcopy 
+        azcopy_v10 
         copy 'plots/*' '${{ secrets.azureWebBlob }}${{ secrets.azureWebBlobSAS }}' 
         --content-type 'image/png' 
         --content-disposition 'inline' 
