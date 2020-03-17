@@ -40,11 +40,21 @@ namespace Corona
 
         private const string StVincentRegionName = "Saint Vincent";
 
+        private const string BahamasRegionName = "Bahamas";
+
+        private const string PalestineRegionName = "Palestine";
+
+        private const string TaipeiRegionName = "Taipei";
+
         public static Dictionary<string, string> Aliases { get; }
             = new Dictionary<string, string>
             {
                 ["Republic of Korea"] = KoreaRegionName,
                 ["Korea, South"] = KoreaRegionName,
+
+                ["Congo (Kinshasa)"] = CongoRegionName,
+                ["Republic of the Congo"] = CongoRegionName,
+                ["Congo (Brazzaville)"] = CongoRegionName,
 
                 ["Mainland China"] = ChinaRegionName,
 
@@ -59,11 +69,13 @@ namespace Corona
                 ["Macao SAR"] = MacauRegionName,
                 ["Russian Federation"] = RussiaRegionName,
                 ["St. Martin"] = StMartinRegionName,
-                ["Congo (Kinshasa)"] = CongoRegionName,
                 ["Czech Republic"] = CzechiaRegionName,
                 ["Taiwan*"] = TaiwanRegionName,
                 ["United Kingdom"] = UkRegionName,
                 ["Saint Vincent and the Grenadines"] = StVincentRegionName,
+                ["The Bahamas"] = BahamasRegionName,
+                ["occupied Palestinian territory"] = PalestineRegionName,
+                ["Taipei and environs"] = TaipeiRegionName,
             };
 
         /// <summary>
@@ -79,6 +91,11 @@ namespace Corona
         ///           "Guernsey", "Jersey", "Mauritania", "Namibia", "Rwanda", 
         ///           "Saint Lucia", "Saint Vincent and the Grenadines", "Seychelles", 
         ///           "Suriname", "Trinidad and Tobago", "Uruguay", "Venezuela"
+        /// 
+        /// 20200317: "Benin", "Central African Republic", "Congo (Brazzaville)", 
+        ///           "Equatorial Guinea", "Greenland", "Guam", "Kosovo", "Liberia", 
+        ///           "Mayotte", "Puerto Rico", "Republic of the Congo", "Somalia", 
+        ///           "Tanzania", "The Bahamas", "Uzbekistan"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -93,12 +110,11 @@ namespace Corona
                 "Aruba",
                 "Australia",
                 "Austria",
-                AzerbaijanRegionName,
-
-                "Bangladesh",
                 "Bahrain",
+                "Bangladesh",      
                 "Belarus",
                 "Belgium",
+                "Benin",
                 "Bhutan",
                 "Bolivia",
                 "Bosnia and Herzegovina",
@@ -106,93 +122,79 @@ namespace Corona
                 "Brunei",
                 "Bulgaria",
                 "Burkina Faso",
-
                 "Cambodia",
                 "Cameroon",
                 "Canada",
                 "Cayman Islands",
+                "Central African Republic",
                 "Channel Islands",
                 "Chile",
-                ChinaRegionName,
                 "Colombia",
-                CongoRegionName,
                 "Costa Rica",
                 "Cote d'Ivoire",
                 "Croatia",
                 "Cuba",
                 "Curacao",
                 "Cyprus",
-                CzechiaRegionName,
-
                 "Denmark",
                 "Dominican Republic",
-
                 "Ecuador",
                 "Egypt",
+                "Equatorial Guinea",
                 "Estonia",
                 "Eswatini",
                 "Ethiopia",
-
                 "Faroe Islands",
                 "Finland",
                 "France",
                 "French Guiana",
-
                 "Gabon",
                 "Georgia",
                 "Germany",
                 "Ghana",
                 "Gibraltar",
                 "Greece",
+                "Greenland",
                 "Guadeloupe",
+                "Guam",
                 "Guatemala",
                 "Guernsey",
-                "Guyana",
                 "Guinea",
-
+                "Guyana",
                 "Holy See",
                 "Honduras",
-                HongKongRegionName,
                 "Hungary",
-
                 "Iceland",
                 "India",
                 "Indonesia",
-                IranRegionName,
                 "Iraq",
-                IrelandRegionName,
                 "Israel",
                 "Italy",
                 "Ivory Coast",
-
                 "Jamaica",
                 "Japan",
                 "Jersey",
                 "Jordan",
-
-                KoreaRegionName,
                 "Kazakhstan",
                 "Kenya",
+                "Kosovo",
                 "Kuwait",
-
                 "Latvia",
                 "Lebanon",
+                "Liberia",
                 "Liechtenstein",
                 "Lithuania",
                 "Luxembourg",
-
-                MacauRegionName,
                 "Malaysia",
                 "Maldives",
                 "Malta",
                 "Martinique",
                 "Mauritania",
+                "Mayotte",
                 "Mexico",
-                MoldovaRegionName,
                 "Monaco",
                 "Mongolia",
                 "Morocco",
-
                 "Namibia",
                 "Nepal",
                 "Netherlands",
@@ -201,28 +203,19 @@ namespace Corona
                 "North Ireland",
                 "North Macedonia",
                 "Norway",
-
-                "occupied Palestinian territory",
                 "Oman",
-                OthersRegionName,
-
                 "Pakistan",
-                "Palestine",
                 "Panama",
                 "Paraguay",
                 "Peru",
                 "Philippines",
                 "Poland",
                 "Portugal",
+                "Puerto Rico",
                 "Qatar",
-
                 "Reunion",
                 "Romania",
-                RussiaRegionName,
                 "Rwanda",
-
-                StVincentRegionName,
-                StMartinRegionName,
                 "Saint Barthelemy",
                 "Saint Lucia",
                 "San Marino",
@@ -233,6 +226,7 @@ namespace Corona
                 "Singapore",
                 "Slovakia",
                 "Slovenia",
+                "Somalia",
                 "South Africa",
                 "Spain",
                 "Sri Lanka",
@@ -240,23 +234,38 @@ namespace Corona
                 "Suriname",
                 "Sweden",
                 "Switzerland",
-
-                "Taipei and environs",
-                TaiwanRegionName,
+                "Tanzania",
                 "Thailand",
                 "Togo",
                 "Trinidad and Tobago",
                 "Tunisia",
                 "Turkey",
-
-                UkRegionName,
                 "Ukraine",
                 "United Arab Emirates",
                 "Uruguay",
                 "US",
-
+                "Uzbekistan",
                 "Vatican City",
                 "Venezuela",
+                AzerbaijanRegionName,
+                BahamasRegionName,
+                ChinaRegionName,
+                CongoRegionName,
+                CzechiaRegionName,
+                HongKongRegionName,
+                IranRegionName,
+                IrelandRegionName,
+                KoreaRegionName,
+                MacauRegionName,
+                MoldovaRegionName,
+                OthersRegionName,
+                PalestineRegionName,
+                RussiaRegionName,
+                StMartinRegionName,
+                StVincentRegionName,
+                TaipeiRegionName,
+                TaiwanRegionName,
+                UkRegionName,
                 VietNamRegionName,
             };
 
