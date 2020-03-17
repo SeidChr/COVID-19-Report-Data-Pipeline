@@ -89,7 +89,7 @@ namespace Corona
                 // collect all regons to print them
                 allRegions.AddRange(dailyReport.Select(report => report.Region));
 
-                // revert aliased names
+                // revert aliased region names
                 foreach (var reportData in dailyReport)
                 {
                     if (Regions.Aliases.ContainsKey(reportData.Region))
@@ -98,6 +98,7 @@ namespace Corona
                     }
                 }
 
+                // collect data for each (known) reagion
                 foreach (var region in plotDataRegional.Keys)
                 {
                     plotDataRegional[region]
@@ -106,6 +107,7 @@ namespace Corona
                             dailyReport.Where(r => r.Region.Trim() == region)));
                 }
 
+                // global data contains all regions, unfiltered
                 plotDataListGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
 
                 lastDate = fileInfo.Date;
@@ -113,18 +115,21 @@ namespace Corona
 
             Regions.CompareWithFoundRegions(allRegions);
 
-            static string GetTitle(string label, DateTime date)
-                => $"COVID-19 Cases // {label} // {date:yyyy-MM-dd}";
+            static string GetTitle(string label)
+                => $"COVID-19 Cases // {label}";
+
+            static string GetDateTitle(string label, DateTime date)
+                => $"{GetTitle(label)} // {date:yyyy-MM-dd}";
 
             static string GetCombinedTitle(string label, DateTime date, int minSignal, int maxSignals, string braceSuffix)
-                => $"COVID-19 Cases // {label} ({minSignal}+, {braceSuffix}) // {date:yyyy-MM-dd}";
+                => $"{GetTitle(label)} ({minSignal}+, {braceSuffix}) // {date:yyyy-MM-dd}";
 
             var createdPlotFileNames = new List<string>();
 
             plotter
                 .CreatePlot(
                     plotDataListGlobal,
-                    GetTitle("GLOBAL", lastDate),
+                    GetDateTitle("GLOBAL", lastDate),
                     "plot-global.png")
                 .AddTo(createdPlotFileNames);
 
@@ -136,19 +141,20 @@ namespace Corona
                 plotter
                     .CreatePlot(
                         plotDataRegional[region],
-                        GetTitle(region, lastDate),
+                        GetDateTitle(region, lastDate),
                         $"plot-{FilterRegionChars(region)}.png",
                         MinConfirmedRegionalPlot)
                     .AddTo(createdPlotFileNames);
             }
 
-            var combinedViewRegionalData = plotDataRegional
-                .Where(pd => !Regions.CombinedPlotRegionExclusions.Contains(pd.Key));
+            // remove excluded regions
+            var combinedViewRegionalData 
+                = plotDataRegional.WhereRegionNotIn(Regions.CombinedPlotExclusions);
 
             plotter
                 .CreateAveragePlot(
                     combinedViewRegionalData,
-                    GetTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
+                    GetDateTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
                     "plot-average.png")
                 .AddTo(createdPlotFileNames);
 
@@ -204,6 +210,39 @@ namespace Corona
                     GetCombinedTitle($"DEAD", lastDate, MinDead, MaxSignalsPerCombinedPlot, "wo. China"),
                     "plot-dead.png",
                     MinDead,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORMALIZED // start:50"),
+                    "plot-confirmed-n.png",
+                    50,
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    plotDataRegional.WhereRegionIn(Regions.CombinedPlotSet1),
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORMALIZED 1 // start:50"),
+                    "plot-confirmed-n1.png",
+                    50,
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdPlotFileNames);
+            
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    plotDataRegional.WhereRegionIn(Regions.CombinedPlotSet2),
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORMALIZED 2 // start:500"),
+                    "plot-confirmed-n2.png",
+                    500,
+                    MinConfirmed,
                     MaxSignalsPerCombinedPlot)
                 .AddTo(createdPlotFileNames);
 

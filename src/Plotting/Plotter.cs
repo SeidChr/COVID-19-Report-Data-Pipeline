@@ -115,6 +115,60 @@ namespace Plotting
             yield return file;
         }
 
+        public IEnumerable<string> CreateCombinedNormalizedPlot(
+            IEnumerable<KeyValuePair<string, List<PlotData>>> plotDataset,
+            Func<PlotData, int> getSignal,
+            string label,
+            string file,
+            double startSignal = 50,
+            double minSignal = 0.0,
+            int maxSignals = 20)
+        {
+            var orderedPlotDataSet = plotDataset
+                .Select(pd =>
+                {
+                    var signal = pd.Value
+                        .Select(pd => (double)getSignal(pd))
+                        .SkipWhile(s => s < startSignal)
+                        .ToArray();
+
+                    return new
+                    {
+                        Label = pd.Key,
+                        Signal = signal,
+                        MaxSignal = signal.Any() ? signal.Max() : -1,
+                    };
+                })
+                .OrderByDescending(pd => pd.MaxSignal)
+                .Where(group => group.MaxSignal >= minSignal)
+                .Take(maxSignals);
+
+            var plt = GetDefaultPlot();
+
+            plt.Ticks(dateTimeX: false);
+
+            double overalMaxValue = 0;
+            foreach (var group in orderedPlotDataSet)
+            {
+                overalMaxValue = group.MaxSignal > overalMaxValue
+                    ? group.MaxSignal
+                    : overalMaxValue;
+
+                plt.PlotSignal(
+                    group.Signal,
+                    sampleRate: 1,
+                    ////xOffset: startDate,
+                    label: group.Label);
+            }
+
+            plt.Title(label);
+            plt.Axis(y2: overalMaxValue * 1.03);
+
+            this.FinalizePlot(plt, file);
+
+            yield return file;
+        }
+
         public IEnumerable<string> CreateAveragePlot(
             IEnumerable<KeyValuePair<string, List<PlotData>>> plotDataset,
             string label,

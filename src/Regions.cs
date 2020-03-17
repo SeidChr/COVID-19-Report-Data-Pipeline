@@ -46,6 +46,14 @@ namespace Corona
 
         private const string TaipeiRegionName = "Taipei";
 
+        private const string ItalyRegionName = "Italy";
+
+        private const string GermanyRegionName = "Germany";
+
+        private const string UsRegionName = "US";
+
+        private const string SpainRegionName = "Spain";
+
         public static Dictionary<string, string> Aliases { get; }
             = new Dictionary<string, string>
             {
@@ -150,7 +158,6 @@ namespace Corona
                 "French Guiana",
                 "Gabon",
                 "Georgia",
-                "Germany",
                 "Ghana",
                 "Gibraltar",
                 "Greece",
@@ -169,7 +176,6 @@ namespace Corona
                 "Indonesia",
                 "Iraq",
                 "Israel",
-                "Italy",
                 "Ivory Coast",
                 "Jamaica",
                 "Japan",
@@ -228,7 +234,6 @@ namespace Corona
                 "Slovenia",
                 "Somalia",
                 "South Africa",
-                "Spain",
                 "Sri Lanka",
                 "Sudan",
                 "Suriname",
@@ -243,7 +248,6 @@ namespace Corona
                 "Ukraine",
                 "United Arab Emirates",
                 "Uruguay",
-                "US",
                 "Uzbekistan",
                 "Vatican City",
                 "Venezuela",
@@ -252,28 +256,56 @@ namespace Corona
                 ChinaRegionName,
                 CongoRegionName,
                 CzechiaRegionName,
+                GermanyRegionName,
                 HongKongRegionName,
                 IranRegionName,
                 IrelandRegionName,
+                ItalyRegionName,
                 KoreaRegionName,
                 MacauRegionName,
                 MoldovaRegionName,
                 OthersRegionName,
                 PalestineRegionName,
                 RussiaRegionName,
+                SpainRegionName,
                 StMartinRegionName,
                 StVincentRegionName,
                 TaipeiRegionName,
                 TaiwanRegionName,
                 UkRegionName,
+                UsRegionName,
                 VietNamRegionName,
             };
 
-        public static List<string> CombinedPlotRegionExclusions { get; }
+        public static List<string> CombinedPlotExclusions { get; }
             = new List<string>
             {
                 ChinaRegionName,
                 OthersRegionName,
+            };
+        
+        public static List<string> CombinedPlotSet1 { get; }
+            = new List<string>
+            {
+                ItalyRegionName,
+                GermanyRegionName,
+                ////ChinaRegionName,
+                UsRegionName,
+                ////KoreaRegionName,
+                IranRegionName,
+                SpainRegionName,
+            };
+
+        public static List<string> CombinedPlotSet2 { get; }
+            = new List<string>
+            {
+                ItalyRegionName,
+                ////GermanyRegionName,
+                ChinaRegionName,
+                ////UsRegionName,
+                KoreaRegionName,
+                IranRegionName,
+                ////SpainRegionName,
             };
 
         public static void CompareWithFoundRegions(List<string> foundRegions)
