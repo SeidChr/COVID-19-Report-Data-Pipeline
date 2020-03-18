@@ -1,4 +1,4 @@
-<match-start>^plot(?:-(\w+))?.png<match-end>
+<match-start>^plot(?:-([\w-]+))?.png<match-end>
 
 <replace-start><a name="$1Plot">![PLOT $1](https://bitmonkey.z6.web.core.windows.net/plot-$1.png)</a>  
 <https://bitmonkey.z6.web.core.windows.net/plot-$1.png>  

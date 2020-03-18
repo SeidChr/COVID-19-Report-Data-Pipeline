@@ -53,6 +53,8 @@ namespace Corona
         private const string UsRegionName = "US";
 
         private const string SpainRegionName = "Spain";
+        
+        private const string GambiaRegionName = "Gambia";
 
         public static Dictionary<string, string> Aliases { get; }
             = new Dictionary<string, string>
@@ -84,6 +86,7 @@ namespace Corona
                 ["The Bahamas"] = BahamasRegionName,
                 ["occupied Palestinian territory"] = PalestineRegionName,
                 ["Taipei and environs"] = TaipeiRegionName,
+                ["The Gambia"] = GambiaRegionName,
             };
 
         /// <summary>
@@ -104,6 +107,8 @@ namespace Corona
         ///           "Equatorial Guinea", "Greenland", "Guam", "Kosovo", "Liberia", 
         ///           "Mayotte", "Puerto Rico", "Republic of the Congo", "Somalia", 
         ///           "Tanzania", "The Bahamas", "Uzbekistan"
+        /// 
+        /// 20200318: "Barbados", "Montenegro", "The Gambia"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -120,6 +125,7 @@ namespace Corona
                 "Austria",
                 "Bahrain",
                 "Bangladesh",      
+                "Barbados", 
                 "Belarus",
                 "Belgium",
                 "Benin",
@@ -200,6 +206,7 @@ namespace Corona
                 "Mexico",
                 "Monaco",
                 "Mongolia",
+                "Montenegro",
                 "Morocco",
                 "Namibia",
                 "Nepal",
@@ -256,6 +263,7 @@ namespace Corona
                 ChinaRegionName,
                 CongoRegionName,
                 CzechiaRegionName,
+                GambiaRegionName,
                 GermanyRegionName,
                 HongKongRegionName,
                 IranRegionName,
