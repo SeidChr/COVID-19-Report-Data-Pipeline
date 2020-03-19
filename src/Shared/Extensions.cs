@@ -32,5 +32,15 @@ namespace Corona.Shared
             this Dictionary<string, List<T>> plotDataSets, 
             List<string> regions) 
             => plotDataSets.Where(pd => !regions.Contains(pd.Key));
+
+        public static double[] Diff(this double[] values)
+        {
+            for (int i = values.Length - 1; i > 0; i--) 
+            {
+                values[i] = values[i] - values[i - 1];
+            }
+
+            return values;
+        }
     }
 }

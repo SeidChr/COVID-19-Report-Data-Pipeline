@@ -61,6 +61,73 @@ namespace Plotting
             yield return file;
         }
 
+        public IEnumerable<string> CreateDiffPlot(
+            List<PlotData> plotDataset,
+            string label,
+            string file,
+            double minConfirmed = 0.0)
+        {
+            var maxConfirmed = plotDataset.Max(pd => pd.Confirmed);
+            if (maxConfirmed < minConfirmed)
+            {
+                // avoid printing a graph for countries under threashold
+                yield break;
+            }
+
+            double[] CreateDiffPlotSignal(Func<PlotData, int> getValue)
+                => plotDataset
+                .Select(pd => (double)getValue(pd))
+                .ToArray()
+                .Diff();
+
+            var diffExistingSignal = CreateDiffPlotSignal(pd => pd.Existing);
+            var diffRecoveredSignal = CreateDiffPlotSignal(pd => pd.Recovered);
+            var diffConfirmedSignal = CreateDiffPlotSignal(pd => pd.Confirmed);
+            var diffDeadSignal = CreateDiffPlotSignal(pd => pd.Dead);
+
+            var maxSignal = Enumerable.Empty<double>()
+                .Concat(diffConfirmedSignal)
+                .Concat(diffRecoveredSignal)
+                .Concat(diffExistingSignal)
+                .Concat(diffDeadSignal)
+                .Max();
+
+            var plt = GetDefaultPlot();
+            var startDate = plotDataset.First().Date.ToOADate();
+
+            //// void CreatePlotDiffSignal(
+            ////     Func<PlotData, int> getValue,
+            ////     string label,
+            ////     Color color)
+            ////     => plt.PlotSignal(
+            ////         plotDataset.Select(pd => (double)getValue(pd)).ToArray().Diff(),
+            ////         sampleRate: 1,
+            ////         xOffset: start,
+            ////         color: color,
+            ////         label: label);
+
+            void PlotDiffSignal(double[] signal, string label, Color color)
+                => plt.PlotSignal(
+                    signal,
+                    sampleRate: 1,
+                    xOffset: startDate,
+                    color: color,
+                    label: "DIFF " + label);
+
+            PlotDiffSignal(diffExistingSignal, nameof(PlotData.Existing), Color.Orange);
+            PlotDiffSignal(diffConfirmedSignal, nameof(PlotData.Confirmed), Color.Red);
+            PlotDiffSignal(diffRecoveredSignal, nameof(PlotData.Recovered), Color.Green);
+            PlotDiffSignal(diffDeadSignal, nameof(PlotData.Dead), Color.Black);
+
+            plt.Axis(y2: maxSignal * 1.03);
+
+            plt.Title(label);
+
+            this.FinalizePlot(plt, file);
+
+            yield return file;
+        }
+
         public IEnumerable<string> CreateCombinedPlot(
             IEnumerable<KeyValuePair<string, List<PlotData>>> plotDataset,
             Func<PlotData, int> getSignal,

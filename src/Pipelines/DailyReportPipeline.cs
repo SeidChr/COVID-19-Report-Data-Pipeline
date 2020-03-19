@@ -145,6 +145,14 @@ namespace Corona
                         $"plot-{FilterRegionChars(region)}.png",
                         MinConfirmedRegionalPlot)
                     .AddTo(createdPlotFileNames);
+
+                plotter
+                    .CreateDiffPlot(
+                        plotDataRegional[region],
+                        GetDateTitle(region + " (diff)", lastDate),
+                        $"plot-{FilterRegionChars(region)}-diff.png",
+                        MinConfirmedRegionalPlot)
+                    .AddTo(createdPlotFileNames);
             }
 
             // remove excluded regions
