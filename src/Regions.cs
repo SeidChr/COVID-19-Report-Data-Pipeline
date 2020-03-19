@@ -66,6 +66,9 @@ namespace Corona
                 ["Republic of the Congo"] = CongoRegionName,
                 ["Congo (Brazzaville)"] = CongoRegionName,
 
+                ["The Gambia"] = GambiaRegionName,
+                ["Gambia, The"] = GambiaRegionName,
+
                 ["Mainland China"] = ChinaRegionName,
 
                 ["Cruise Ship"] = OthersRegionName,
@@ -86,7 +89,6 @@ namespace Corona
                 ["The Bahamas"] = BahamasRegionName,
                 ["occupied Palestinian territory"] = PalestineRegionName,
                 ["Taipei and environs"] = TaipeiRegionName,
-                ["The Gambia"] = GambiaRegionName,
             };
 
         /// <summary>
@@ -109,6 +111,8 @@ namespace Corona
         ///           "Tanzania", "The Bahamas", "Uzbekistan"
         /// 
         /// 20200318: "Barbados", "Montenegro", "The Gambia"
+        /// 
+        /// 20200319: "Djibouti", "Gambia, The", "Kyrgyzstan", "Mauritius", "Zambia"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -151,6 +155,7 @@ namespace Corona
                 "Curacao",
                 "Cyprus",
                 "Denmark",
+                "Djibouti", 
                 "Dominican Republic",
                 "Ecuador",
                 "Egypt",
@@ -191,6 +196,7 @@ namespace Corona
                 "Kenya",
                 "Kosovo",
                 "Kuwait",
+                "Kyrgyzstan", 
                 "Latvia",
                 "Lebanon",
                 "Liberia",
@@ -202,6 +208,7 @@ namespace Corona
                 "Malta",
                 "Martinique",
                 "Mauritania",
+                "Mauritius", 
                 "Mayotte",
                 "Mexico",
                 "Monaco",
@@ -258,6 +265,7 @@ namespace Corona
                 "Uzbekistan",
                 "Vatican City",
                 "Venezuela",
+                "Zambia",
                 AzerbaijanRegionName,
                 BahamasRegionName,
                 ChinaRegionName,
