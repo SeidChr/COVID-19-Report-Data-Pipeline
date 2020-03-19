@@ -254,7 +254,7 @@ namespace Corona
                     MaxSignalsPerCombinedPlot)
                 .AddTo(createdPlotFileNames);
 
-            foreach (var creadedPlotFileName in createdPlotFileNames)
+            foreach (var creadedPlotFileName in createdPlotFileNames.OrderBy(_ => _))
             {
                 System.Console.WriteLine(creadedPlotFileName);
             }
