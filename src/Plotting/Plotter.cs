@@ -24,7 +24,8 @@ namespace Plotting
             List<PlotData> plotDataset,
             string label,
             string file,
-            double minConfirmed = 0.0)
+            double minConfirmed = 0.0,
+            int startAtConfirmed = 0)
         {
             var maxConfirmed = plotDataset.Max(pd => pd.Confirmed);
             if (maxConfirmed < minConfirmed)
@@ -34,6 +35,14 @@ namespace Plotting
             }
 
             var plt = GetDefaultPlot();
+
+            if (startAtConfirmed > 0) 
+            {
+                plotDataset = plotDataset
+                    .SkipWhile(pd => pd.Confirmed < startAtConfirmed)
+                    .ToList();
+            }
+
             var start = plotDataset.First().Date.ToOADate();
 
             void CreatePlotSignal(

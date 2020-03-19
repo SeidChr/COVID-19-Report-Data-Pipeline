@@ -133,6 +133,13 @@ namespace Corona
                     "plot-global.png")
                 .AddTo(createdPlotFileNames);
 
+            plotter
+                .CreateDiffPlot(
+                    plotDataListGlobal,
+                    GetDateTitle("GLOBAL (diff)", lastDate),
+                    "plot-global-diff.png")
+                .AddTo(createdPlotFileNames);
+
             string FilterRegionChars(string region)
                 => Regex.Replace(region.ToLower(), @"\W", string.Empty);
 
