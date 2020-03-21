@@ -124,14 +124,22 @@ namespace Corona
             static string GetCombinedTitle(string label, DateTime date, int minSignal, int maxSignals, string braceSuffix)
                 => $"{GetTitle(label)} ({minSignal}+, {braceSuffix}) // {date:yyyy-MM-dd}";
 
-            var createdPlotFileNames = new List<string>();
+            var createdRegionalPlotFileNames = new List<string>();
+            var createdCustomPlotFileNames = new List<string>();
 
             plotter
                 .CreatePlot(
                     plotDataListGlobal,
                     GetDateTitle("GLOBAL", lastDate),
                     "plot-global.png")
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateDiffPlot(
+                    plotDataListGlobal,
+                    GetDateTitle("GLOBAL (diff)", lastDate),
+                    "plot-global-diff.png")
+                .AddTo(createdCustomPlotFileNames);
 
             string FilterRegionChars(string region)
                 => Regex.Replace(region.ToLower(), @"\W", string.Empty);
@@ -144,7 +152,15 @@ namespace Corona
                         GetDateTitle(region, lastDate),
                         $"plot-{FilterRegionChars(region)}.png",
                         MinConfirmedRegionalPlot)
-                    .AddTo(createdPlotFileNames);
+                    .AddTo(createdRegionalPlotFileNames);
+
+                plotter
+                    .CreateDiffPlot(
+                        plotDataRegional[region],
+                        GetDateTitle(region + " (diff)", lastDate),
+                        $"plot-{FilterRegionChars(region)}-diff.png",
+                        MinConfirmedRegionalPlot)
+                    .AddTo(createdRegionalPlotFileNames);
             }
 
             // remove excluded regions
@@ -156,7 +172,7 @@ namespace Corona
                     combinedViewRegionalData,
                     GetDateTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
                     "plot-average.png")
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedPlot(
@@ -171,7 +187,7 @@ namespace Corona
                     "plot-existing.png",
                     MinExisting,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedPlot(
@@ -186,7 +202,7 @@ namespace Corona
                     "plot-confirmed.png",
                     MinConfirmed,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedPlot(
@@ -201,7 +217,7 @@ namespace Corona
                     "plot-recovered.png",
                     MinRecovered,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedPlot(
@@ -211,7 +227,7 @@ namespace Corona
                     "plot-dead.png",
                     MinDead,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedNormalizedPlot(
@@ -222,7 +238,7 @@ namespace Corona
                     50,
                     MinConfirmed,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
             plotter
                 .CreateCombinedNormalizedPlot(
@@ -233,7 +249,7 @@ namespace Corona
                     50,
                     MinConfirmed,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
             
             plotter
                 .CreateCombinedNormalizedPlot(
@@ -244,9 +260,16 @@ namespace Corona
                     500,
                     MinConfirmed,
                     MaxSignalsPerCombinedPlot)
-                .AddTo(createdPlotFileNames);
+                .AddTo(createdCustomPlotFileNames);
 
-            foreach (var creadedPlotFileName in createdPlotFileNames)
+            // System.Console.WriteLine("Regional Plots:");
+            foreach (var creadedPlotFileName in createdRegionalPlotFileNames.OrderBy(_ => _))
+            {
+                System.Console.WriteLine(creadedPlotFileName);
+            }
+
+            // System.Console.WriteLine("Custom Plots:");
+            foreach (var creadedPlotFileName in createdCustomPlotFileNames.OrderBy(_ => _))
             {
                 System.Console.WriteLine(creadedPlotFileName);
             }

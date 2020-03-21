@@ -114,10 +114,11 @@ namespace Corona
         /// 
         /// 20200318: "Barbados", "Montenegro", "The Gambia"
         /// 
-        /// 20200321: "Angola", "Bahamas, The", "Cabo Verde", "Chad", "Djibouti", 
-        ///           "El Salvador", "Fiji", "Gambia, The", "Haiti", "Kyrgyzstan", 
-        ///           "Madagascar", "Mauritius", "Nicaragua", "Niger", "Papua New Guinea", 
-        ///           "Zambia", "Zimbabwe"
+        /// 20200319: "Djibouti", "Gambia, The", "Kyrgyzstan", "Mauritius", "Zambia"
+        /// 
+        /// 20200321: "Angola", "Bahamas, The", "Cabo Verde", "Chad", "El Salvador", 
+        ///           "Fiji", "Haiti", "Madagascar", "Nicaragua", "Niger", 
+        ///           "Papua New Guinea", "Zimbabwe"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -163,7 +164,7 @@ namespace Corona
                 "Curacao",
                 "Cyprus",
                 "Denmark",
-                "Djibouti",
+                "Djibouti", 
                 "Dominican Republic",
                 "Ecuador",
                 "Egypt",
@@ -207,7 +208,7 @@ namespace Corona
                 "Kenya",
                 "Kosovo",
                 "Kuwait",
-                "Kyrgyzstan",
+                "Kyrgyzstan", 
                 "Latvia",
                 "Lebanon",
                 "Liberia",
@@ -220,7 +221,7 @@ namespace Corona
                 "Malta",
                 "Martinique",
                 "Mauritania",
-                "Mauritius",
+                "Mauritius", 
                 "Mayotte",
                 "Mexico",
                 "Monaco",
