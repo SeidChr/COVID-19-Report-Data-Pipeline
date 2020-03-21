@@ -53,7 +53,7 @@ namespace Corona
         private const string UsRegionName = "US";
 
         private const string SpainRegionName = "Spain";
-        
+
         private const string GambiaRegionName = "Gambia";
 
         public static Dictionary<string, string> Aliases { get; }
@@ -65,6 +65,12 @@ namespace Corona
                 ["Congo (Kinshasa)"] = CongoRegionName,
                 ["Republic of the Congo"] = CongoRegionName,
                 ["Congo (Brazzaville)"] = CongoRegionName,
+
+                ["The Bahamas"] = BahamasRegionName,
+                ["Bahamas, The"] = BahamasRegionName,
+
+                ["The Gambia"] = GambiaRegionName,
+                ["Gambia, The"] = GambiaRegionName,
 
                 ["Mainland China"] = ChinaRegionName,
 
@@ -83,10 +89,8 @@ namespace Corona
                 ["Taiwan*"] = TaiwanRegionName,
                 ["United Kingdom"] = UkRegionName,
                 ["Saint Vincent and the Grenadines"] = StVincentRegionName,
-                ["The Bahamas"] = BahamasRegionName,
                 ["occupied Palestinian territory"] = PalestineRegionName,
                 ["Taipei and environs"] = TaipeiRegionName,
-                ["The Gambia"] = GambiaRegionName,
             };
 
         /// <summary>
@@ -109,6 +113,11 @@ namespace Corona
         ///           "Tanzania", "The Bahamas", "Uzbekistan"
         /// 
         /// 20200318: "Barbados", "Montenegro", "The Gambia"
+        /// 
+        /// 20200321: "Angola", "Bahamas, The", "Cabo Verde", "Chad", "Djibouti", 
+        ///           "El Salvador", "Fiji", "Gambia, The", "Haiti", "Kyrgyzstan", 
+        ///           "Madagascar", "Mauritius", "Nicaragua", "Niger", "Papua New Guinea", 
+        ///           "Zambia", "Zimbabwe"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -117,6 +126,7 @@ namespace Corona
                 "Albania",
                 "Algeria",
                 "Andorra",
+                "Angola",
                 "Antigua and Barbuda",
                 "Argentina",
                 "Armenia",
@@ -124,8 +134,8 @@ namespace Corona
                 "Australia",
                 "Austria",
                 "Bahrain",
-                "Bangladesh",      
-                "Barbados", 
+                "Bangladesh",
+                "Barbados",
                 "Belarus",
                 "Belgium",
                 "Benin",
@@ -136,11 +146,13 @@ namespace Corona
                 "Brunei",
                 "Bulgaria",
                 "Burkina Faso",
+                "Cabo Verde",
                 "Cambodia",
                 "Cameroon",
                 "Canada",
                 "Cayman Islands",
                 "Central African Republic",
+                "Chad",
                 "Channel Islands",
                 "Chile",
                 "Colombia",
@@ -151,14 +163,17 @@ namespace Corona
                 "Curacao",
                 "Cyprus",
                 "Denmark",
+                "Djibouti",
                 "Dominican Republic",
                 "Ecuador",
                 "Egypt",
+                "El Salvador",
                 "Equatorial Guinea",
                 "Estonia",
                 "Eswatini",
                 "Ethiopia",
                 "Faroe Islands",
+                "Fiji",
                 "Finland",
                 "France",
                 "French Guiana",
@@ -174,6 +189,7 @@ namespace Corona
                 "Guernsey",
                 "Guinea",
                 "Guyana",
+                "Haiti",
                 "Holy See",
                 "Honduras",
                 "Hungary",
@@ -191,17 +207,20 @@ namespace Corona
                 "Kenya",
                 "Kosovo",
                 "Kuwait",
+                "Kyrgyzstan",
                 "Latvia",
                 "Lebanon",
                 "Liberia",
                 "Liechtenstein",
                 "Lithuania",
                 "Luxembourg",
+                "Madagascar",
                 "Malaysia",
                 "Maldives",
                 "Malta",
                 "Martinique",
                 "Mauritania",
+                "Mauritius",
                 "Mayotte",
                 "Mexico",
                 "Monaco",
@@ -212,6 +231,8 @@ namespace Corona
                 "Nepal",
                 "Netherlands",
                 "New Zealand",
+                "Nicaragua",
+                "Niger",
                 "Nigeria",
                 "North Ireland",
                 "North Macedonia",
@@ -219,6 +240,7 @@ namespace Corona
                 "Oman",
                 "Pakistan",
                 "Panama",
+                "Papua New Guinea",
                 "Paraguay",
                 "Peru",
                 "Philippines",
@@ -258,6 +280,8 @@ namespace Corona
                 "Uzbekistan",
                 "Vatican City",
                 "Venezuela",
+                "Zambia",
+                "Zimbabwe",
                 AzerbaijanRegionName,
                 BahamasRegionName,
                 ChinaRegionName,
@@ -291,7 +315,7 @@ namespace Corona
                 ChinaRegionName,
                 OthersRegionName,
             };
-        
+
         public static List<string> CombinedPlotSet1 { get; }
             = new List<string>
             {

@@ -32,7 +32,7 @@ namespace Corona
         public const int MinRecovered = 500;
 
         // filter regions for an own region-plot
-        public const int MinConfirmedRegionalPlot = 250;
+        public const int MinConfirmedRegionalPlot = 500;
 
         // filter regions for combined plot: dead
         public const int MinDead = 10;
