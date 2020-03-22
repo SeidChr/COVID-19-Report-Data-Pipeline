@@ -35,7 +35,7 @@ namespace Corona
         public const int MinConfirmedRegionalPlot = 500;
 
         // filter regions for combined plot: dead
-        public const int MinDead = 10;
+        public const int MinDead = 50;
 
         public const int MaxSignalsPerCombinedPlot = 25;
 
@@ -225,6 +225,17 @@ namespace Corona
                     pd => pd.Dead,
                     GetCombinedTitle($"DEAD", lastDate, MinDead, MaxSignalsPerCombinedPlot, "wo. China"),
                     "plot-dead.png",
+                    MinDead,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Dead,
+                    GetTitle("DEAD NORMALIZED // start:50"),
+                    "plot-dead-n.png",
+                    50,
                     MinDead,
                     MaxSignalsPerCombinedPlot)
                 .AddTo(createdCustomPlotFileNames);
