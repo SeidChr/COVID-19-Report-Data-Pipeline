@@ -119,6 +119,8 @@ namespace Corona
         /// 20200321: "Angola", "Bahamas, The", "Cabo Verde", "Chad", "El Salvador", 
         ///           "Fiji", "Haiti", "Madagascar", "Nicaragua", "Niger", 
         ///           "Papua New Guinea", "Zimbabwe"
+        /// 
+        /// 20200322: "Cape Verde", "East Timor", "Eritrea", "Uganda"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
