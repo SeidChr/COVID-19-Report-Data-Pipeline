@@ -24,10 +24,10 @@ namespace Corona
     public class DailyReportPipeline
     {
         // filter regions for combined plot: existing
-        public const int MinExisting = 1000;
+        public const int MinExisting = 5000;
 
         // filter regions for combined plot: confirmed
-        public const int MinConfirmed = 1000;
+        public const int MinConfirmed = 5000;
 
         // filter regions for combined plot: confirmed
         public const int MinRecovered = 500;
