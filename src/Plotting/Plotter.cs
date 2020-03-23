@@ -19,7 +19,7 @@ namespace Plotting
             Directory.CreateDirectory(directory);
             this.directory = directory;
         }
-
+        
         public IEnumerable<string> CreatePlot(
             List<PlotData> plotDataset,
             string label,

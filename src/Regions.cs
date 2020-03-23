@@ -121,6 +121,8 @@ namespace Corona
         ///           "Papua New Guinea", "Zimbabwe"
         /// 
         /// 20200322: "Cape Verde", "East Timor", "Eritrea", "Uganda"
+        /// 
+        /// 20200323: "Dominica", "Grenada", "Mozambique", "Syria", "Timor-Leste"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -168,6 +170,7 @@ namespace Corona
                 "Cyprus",
                 "Denmark",
                 "Djibouti", 
+                "Dominica", 
                 "Dominican Republic",
                 "East Timor",
                 "Ecuador",
@@ -189,6 +192,7 @@ namespace Corona
                 "Gibraltar",
                 "Greece",
                 "Greenland",
+                "Grenada", 
                 "Guadeloupe",
                 "Guam",
                 "Guatemala",
@@ -233,6 +237,7 @@ namespace Corona
                 "Mongolia",
                 "Montenegro",
                 "Morocco",
+                "Mozambique", 
                 "Namibia",
                 "Nepal",
                 "Netherlands",
@@ -274,8 +279,10 @@ namespace Corona
                 "Suriname",
                 "Sweden",
                 "Switzerland",
+                "Syria", 
                 "Tanzania",
                 "Thailand",
+                "Timor-Leste",
                 "Togo",
                 "Trinidad and Tobago",
                 "Tunisia",

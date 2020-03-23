@@ -13,6 +13,7 @@ namespace Corona
     using Corona.GithubClient;
     using Corona.Plotting.Model;
     using Corona.Shared;
+    using Corona.Templating;
     using FileHelpers;
     using global::Plotting;
     using ScottPlot;
@@ -274,16 +275,23 @@ namespace Corona
                 .AddTo(createdCustomPlotFileNames);
 
             // System.Console.WriteLine("Regional Plots:");
-            foreach (var creadedPlotFileName in createdRegionalPlotFileNames.OrderBy(_ => _))
+            var orderedRegionalPlots = createdRegionalPlotFileNames.OrderBy(_ => _);
+            foreach (var creadedPlotFileName in orderedRegionalPlots)
             {
                 System.Console.WriteLine(creadedPlotFileName);
             }
 
             // System.Console.WriteLine("Custom Plots:");
-            foreach (var creadedPlotFileName in createdCustomPlotFileNames.OrderBy(_ => _))
+            var orderedCustomPlots = createdCustomPlotFileNames.OrderBy(_ => _);
+            foreach (var creadedPlotFileName in orderedCustomPlots)
             {
                 System.Console.WriteLine(creadedPlotFileName);
             }
+
+            var markdownRenderer = new MarkdownPlotListRenderer("md");
+            markdownRenderer.RenderPlotListMarkdown("All-Plots.md", orderedRegionalPlots.Concat(orderedCustomPlots));
+            markdownRenderer.RenderPlotListMarkdown("Region-Plots.md", orderedRegionalPlots);
+            markdownRenderer.RenderPlotListMarkdown("Custom-Plots.md", orderedCustomPlots);
         }
 
         private static PlotData CreatePlotData(DateTime date, IEnumerable<ReportData> dailyReport)
