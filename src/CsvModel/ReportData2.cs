@@ -51,6 +51,5 @@ namespace Corona.CsvModel
         [FieldOrder(120)]
         [FieldQuoted]
         public string CombinedKey { get; set; } = string.Empty;
-
     }
 }

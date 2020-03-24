@@ -57,7 +57,7 @@ namespace Corona
                 "COVID-19",
                 "csse_covid_19_data/csse_covid_19_daily_reports");
 
-            //var dailyReportCsvEngine = new FileHelperEngine<ReportData>();
+            ////var dailyReportCsvEngine = new FileHelperEngine<ReportData>();
             RecordTypeSelector recordSelector = (engine, line) 
                 => line.Replace("\".*\"", "\"\"").Count(c => c == ',') >= 10
                     ? typeof(ReportData2)
@@ -94,7 +94,7 @@ namespace Corona
                 System.Console.WriteLine($"Processing {fileInfo.Date:yyyy-MM-dd}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
-                // var dailyReport = dailyReportCsvEngine.ReadStringAsList(fileData.Contents);
+                ////var dailyReport = dailyReportCsvEngine.ReadStringAsList(fileData.Contents);
                 var dailyReportEntries = dailyReportCsvEngine.ReadString(fileData.Contents);
                 var dailyReport = dailyReportEntries
                     .Select(entry => entry switch 
@@ -103,7 +103,7 @@ namespace Corona
                         ReportData2 r2 => Convert(r2), 
                         _ => null 
                     })
-                    .Where(n => n != null);
+                    .OfType<ReportData>();
 
                 // collect all regons to print them
                 allRegions.AddRange(dailyReport.Select(report => report.Region));
