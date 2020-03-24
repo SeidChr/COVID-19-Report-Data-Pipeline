@@ -143,6 +143,7 @@ namespace Corona
                 "Barbados",
                 "Belarus",
                 "Belgium",
+                "Belize",
                 "Benin",
                 "Bhutan",
                 "Bolivia",

@@ -57,7 +57,16 @@ namespace Corona
                 "COVID-19",
                 "csse_covid_19_data/csse_covid_19_daily_reports");
 
-            var dailyReportCsvEngine = new FileHelperEngine<ReportData>();
+            //var dailyReportCsvEngine = new FileHelperEngine<ReportData>();
+            RecordTypeSelector recordSelector = (engine, line) 
+                => line.Replace("\".*\"", "\"\"").Count(c => c == ',') >= 10
+                    ? typeof(ReportData2)
+                    : typeof(ReportData);
+
+            var dailyReportCsvEngine = new MultiRecordEngine(
+                recordSelector,
+                typeof(ReportData), 
+                typeof(ReportData2));
             var dailyReportData = new List<KeyValuePair<DateTime, List<ReportData>>>();
 
             static DateTime ParseDailyReportFileName(string fileName)
@@ -85,7 +94,16 @@ namespace Corona
                 System.Console.WriteLine($"Processing {fileInfo.Date:yyyy-MM-dd}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
-                var dailyReport = dailyReportCsvEngine.ReadStringAsList(fileData.Contents);
+                // var dailyReport = dailyReportCsvEngine.ReadStringAsList(fileData.Contents);
+                var dailyReportEntries = dailyReportCsvEngine.ReadString(fileData.Contents);
+                var dailyReport = dailyReportEntries
+                    .Select(entry => entry switch 
+                    {
+                        ReportData r1 => r1, 
+                        ReportData2 r2 => Convert(r2), 
+                        _ => null 
+                    })
+                    .Where(n => n != null);
 
                 // collect all regons to print them
                 allRegions.AddRange(dailyReport.Select(report => report.Region));
@@ -309,6 +327,19 @@ namespace Corona
                 Recovered = recovered,
                 Existing = existing,
             };
+        }
+
+        private static ReportData Convert(ReportData2 report) 
+        {
+            var result = new ReportData();
+            result.Province = report.Province;
+            result.Region = report.Region;
+
+            result.Confirmed = report.Confirmed;
+            result.Deaths = report.Deaths;
+            result.Recovered = report.Recovered;
+
+            return result;
         }
     }
 }
