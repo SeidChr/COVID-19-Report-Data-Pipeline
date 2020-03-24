@@ -103,7 +103,8 @@ namespace Corona
                         ReportData2 r2 => Convert(r2), 
                         _ => null 
                     })
-                    .OfType<ReportData>();
+                    .OfType<ReportData>()
+                    .ToList();
 
                 // collect all regons to print them
                 allRegions.AddRange(dailyReport.Select(report => report.Region));
