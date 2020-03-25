@@ -49,17 +49,25 @@ namespace Plotting
                 Func<PlotData, int> getValue,
                 string label,
                 Color color)
-                => plt.PlotSignal(
-                    plotDataset.Select(pd => (double)getValue(pd)).ToArray(),
+            { 
+                var signal = plotDataset
+                    .Select(pd => (double)getValue(pd))
+                    .ToArray();
+
+                plt.PlotSignal(
+                    signal,
                     sampleRate: 1,
                     xOffset: start,
                     color: color,
-                    label: label);
+                    label: label + $" ({signal.Last()})");
+            }
 
             CreatePlotSignal(pd => pd.Existing, nameof(PlotData.Existing), Color.Orange);
             CreatePlotSignal(pd => pd.Confirmed, nameof(PlotData.Confirmed), Color.Red);
             CreatePlotSignal(pd => pd.Recovered, nameof(PlotData.Recovered), Color.Green);
             CreatePlotSignal(pd => pd.Dead, nameof(PlotData.Dead), Color.Black);
+
+            ////plt.PlotText("asd", 0,0, frame: true);
 
             plt.Axis(y2: maxConfirmed * 1.03);
 
@@ -104,24 +112,13 @@ namespace Plotting
             var plt = GetDefaultPlot();
             var startDate = plotDataset.First().Date.ToOADate();
 
-            //// void CreatePlotDiffSignal(
-            ////     Func<PlotData, int> getValue,
-            ////     string label,
-            ////     Color color)
-            ////     => plt.PlotSignal(
-            ////         plotDataset.Select(pd => (double)getValue(pd)).ToArray().Diff(),
-            ////         sampleRate: 1,
-            ////         xOffset: start,
-            ////         color: color,
-            ////         label: label);
-
             void PlotDiffSignal(double[] signal, string label, Color color)
                 => plt.PlotSignal(
                     signal,
                     sampleRate: 1,
                     xOffset: startDate,
                     color: color,
-                    label: "DIFF " + label);
+                    label: "DIFF " + label + $" ({signal.Last()})");
 
             PlotDiffSignal(diffExistingSignal, nameof(PlotData.Existing), Color.Orange);
             PlotDiffSignal(diffConfirmedSignal, nameof(PlotData.Confirmed), Color.Red);
@@ -180,7 +177,7 @@ namespace Plotting
                     group.Signal,
                     sampleRate: 1,
                     xOffset: startDate,
-                    label: group.Label);
+                    label: group.Label + $" ({group.Signal.Last()})");
             }
 
             plt.Title(label);
@@ -234,7 +231,7 @@ namespace Plotting
                     group.Signal,
                     sampleRate: 1,
                     ////xOffset: startDate,
-                    label: group.Label);
+                    label: group.Label + $" ({group.Signal.Last()})");
             }
 
             plt.Title(label);
@@ -278,7 +275,7 @@ namespace Plotting
                     sampleRate: 1,
                     xOffset: startDate,
                     color: color,
-                    label: "AVG " + label);
+                    label: "AVG " + label + $" ({signal.Last()})");
 
             PlotAvgSignal(avgExistingSignal, nameof(PlotData.Existing), Color.Orange);
             PlotAvgSignal(avgConfirmedSignal, nameof(PlotData.Confirmed), Color.Red);
