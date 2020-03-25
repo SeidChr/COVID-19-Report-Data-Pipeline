@@ -123,6 +123,8 @@ namespace Corona
         /// 20200322: "Cape Verde", "East Timor", "Eritrea", "Uganda"
         /// 
         /// 20200323: "Dominica", "Grenada", "Mozambique", "Syria", "Timor-Leste"
+        /// 
+        /// 20200325: "Laos", "Libya"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -219,9 +221,11 @@ namespace Corona
                 "Kosovo",
                 "Kuwait",
                 "Kyrgyzstan", 
+                "Laos",
                 "Latvia",
                 "Lebanon",
                 "Liberia",
+                "Libya",
                 "Liechtenstein",
                 "Lithuania",
                 "Luxembourg",
