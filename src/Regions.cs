@@ -74,6 +74,7 @@ namespace Corona
 
                 ["Mainland China"] = ChinaRegionName,
 
+                ["Diamond Princess"] = OthersRegionName,
                 ["Cruise Ship"] = OthersRegionName,
 
                 ["Republic of Ireland"] = IrelandRegionName,
@@ -125,6 +126,10 @@ namespace Corona
         /// 20200323: "Dominica", "Grenada", "Mozambique", "Syria", "Timor-Leste"
         /// 
         /// 20200325: "Laos", "Libya"
+        /// 
+        /// 20200326: "Diamond Princess", "Guinea-Bissau", "Mali", "Saint Kitts and Nevis"
+        /// 
+        /// 20200328: "Burma", "West Bank and Gaza"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -154,11 +159,12 @@ namespace Corona
                 "Brunei",
                 "Bulgaria",
                 "Burkina Faso",
+                "Burma",
                 "Cabo Verde",
                 "Cambodia",
                 "Cameroon",
                 "Canada",
-                "Cape Verde", 
+                "Cape Verde",
                 "Cayman Islands",
                 "Central African Republic",
                 "Chad",
@@ -172,15 +178,15 @@ namespace Corona
                 "Curacao",
                 "Cyprus",
                 "Denmark",
-                "Djibouti", 
-                "Dominica", 
+                "Djibouti",
+                "Dominica",
                 "Dominican Republic",
                 "East Timor",
                 "Ecuador",
                 "Egypt",
                 "El Salvador",
                 "Equatorial Guinea",
-                "Eritrea", 
+                "Eritrea",
                 "Estonia",
                 "Eswatini",
                 "Ethiopia",
@@ -195,11 +201,12 @@ namespace Corona
                 "Gibraltar",
                 "Greece",
                 "Greenland",
-                "Grenada", 
+                "Grenada",
                 "Guadeloupe",
                 "Guam",
                 "Guatemala",
                 "Guernsey",
+                "Guinea-Bissau",
                 "Guinea",
                 "Guyana",
                 "Haiti",
@@ -220,7 +227,7 @@ namespace Corona
                 "Kenya",
                 "Kosovo",
                 "Kuwait",
-                "Kyrgyzstan", 
+                "Kyrgyzstan",
                 "Laos",
                 "Latvia",
                 "Lebanon",
@@ -232,17 +239,18 @@ namespace Corona
                 "Madagascar",
                 "Malaysia",
                 "Maldives",
+                "Mali",
                 "Malta",
                 "Martinique",
                 "Mauritania",
-                "Mauritius", 
+                "Mauritius",
                 "Mayotte",
                 "Mexico",
                 "Monaco",
                 "Mongolia",
                 "Montenegro",
                 "Morocco",
-                "Mozambique", 
+                "Mozambique",
                 "Namibia",
                 "Nepal",
                 "Netherlands",
@@ -268,6 +276,7 @@ namespace Corona
                 "Romania",
                 "Rwanda",
                 "Saint Barthelemy",
+                "Saint Kitts and Nevis",
                 "Saint Lucia",
                 "San Marino",
                 "Saudi Arabia",
@@ -284,7 +293,7 @@ namespace Corona
                 "Suriname",
                 "Sweden",
                 "Switzerland",
-                "Syria", 
+                "Syria",
                 "Tanzania",
                 "Thailand",
                 "Timor-Leste",
@@ -299,6 +308,7 @@ namespace Corona
                 "Uzbekistan",
                 "Vatican City",
                 "Venezuela",
+                "West Bank and Gaza",
                 "Zambia",
                 "Zimbabwe",
                 AzerbaijanRegionName,
@@ -331,7 +341,7 @@ namespace Corona
         public static List<string> CombinedPlotExclusions { get; }
             = new List<string>
             {
-                ChinaRegionName,
+                ////ChinaRegionName,
                 OthersRegionName,
             };
 

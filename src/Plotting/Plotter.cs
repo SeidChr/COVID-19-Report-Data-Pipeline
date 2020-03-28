@@ -1,4 +1,4 @@
-namespace Plotting
+namespace Corona.Plotting
 {
     using System;
     using System.Collections.Generic;

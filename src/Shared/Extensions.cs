@@ -24,12 +24,12 @@ namespace Corona.Shared
             => list.AddRange(enumerable);
         
         public static IEnumerable<KeyValuePair<string, List<T>>> WhereRegionIn<T>(
-                this Dictionary<string, List<T>> plotDataSets, 
+                this IEnumerable<KeyValuePair<string, List<T>>> plotDataSets, 
                 List<string> regions) 
                 => plotDataSets.Where(pd => regions.Contains(pd.Key));
 
         public static IEnumerable<KeyValuePair<string, List<T>>> WhereRegionNotIn<T>(
-            this Dictionary<string, List<T>> plotDataSets, 
+            this IEnumerable<KeyValuePair<string, List<T>>> plotDataSets, 
             List<string> regions) 
             => plotDataSets.Where(pd => !regions.Contains(pd.Key));
 

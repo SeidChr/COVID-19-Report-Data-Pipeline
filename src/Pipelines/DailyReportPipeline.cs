@@ -3,7 +3,6 @@ namespace Corona
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -11,12 +10,12 @@ namespace Corona
     using System.Threading.Tasks;
     using Corona.CsvModel;
     using Corona.GithubClient;
+    using Corona.Plotting;
     using Corona.Plotting.Model;
     using Corona.Shared;
     using Corona.Templating;
     using FileHelpers;
-    using global::Plotting;
-    using ScottPlot;
+    using RegionalPlotData = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<Plotting.Model.PlotData>>>;
 
     /// <summary>
     /// Main Programm class.
@@ -30,13 +29,13 @@ namespace Corona
         public const int MinConfirmed = 5000;
 
         // filter regions for combined plot: confirmed
-        public const int MinRecovered = 500;
-
-        // filter regions for an own region-plot
-        public const int MinConfirmedRegionalPlot = 500;
+        public const int MinRecovered = 1000;
 
         // filter regions for combined plot: dead
-        public const int MinDead = 50;
+        public const int MinDead = 250;
+
+        // filter regions for an own region-plot
+        public const int MinConfirmedRegionalPlot = 1000;
 
         public const int MaxSignalsPerCombinedPlot = 25;
 
@@ -57,15 +56,14 @@ namespace Corona
                 "COVID-19",
                 "csse_covid_19_data/csse_covid_19_daily_reports");
 
-            ////var dailyReportCsvEngine = new FileHelperEngine<ReportData>();
-            RecordTypeSelector recordSelector = (engine, line) 
+            RecordTypeSelector recordSelector = (engine, line)
                 => line.Replace("\".*\"", "\"\"").Count(c => c == ',') >= 10
                     ? typeof(ReportData2)
                     : typeof(ReportData);
 
             var dailyReportCsvEngine = new MultiRecordEngine(
                 recordSelector,
-                typeof(ReportData), 
+                typeof(ReportData),
                 typeof(ReportData2));
             var dailyReportData = new List<KeyValuePair<DateTime, List<ReportData>>>();
 
@@ -81,7 +79,7 @@ namespace Corona
                 .Select(f => new { File = f, Date = ParseDailyReportFileName(f.Name) })
                 .OrderBy(fd => fd.Date);
 
-            List<PlotData> plotDataListGlobal = new List<PlotData>();
+            List<PlotData> plotDataGlobal = new List<PlotData>();
 
             var plotRegions = Regions.All;
             var plotDataRegional = plotRegions.ToDictionary(r => r, r => new List<PlotData>());
@@ -94,14 +92,13 @@ namespace Corona
                 System.Console.WriteLine($"Processing {fileInfo.Date:yyyy-MM-dd}");
 
                 var fileData = await github.GetFileDataAsync(fileInfo.File);
-                ////var dailyReport = dailyReportCsvEngine.ReadStringAsList(fileData.Contents);
                 var dailyReportEntries = dailyReportCsvEngine.ReadString(fileData.Contents);
                 var dailyReport = dailyReportEntries
-                    .Select(entry => entry switch 
+                    .Select(entry => entry switch
                     {
-                        ReportData r1 => r1, 
-                        ReportData2 r2 => Convert(r2), 
-                        _ => null 
+                        ReportData r1 => r1,
+                        ReportData2 r2 => Convert(r2),
+                        _ => null
                     })
                     .OfType<ReportData>()
                     .ToList();
@@ -128,170 +125,26 @@ namespace Corona
                 }
 
                 // global data contains all regions, unfiltered
-                plotDataListGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
+                plotDataGlobal.Add(CreatePlotData(fileInfo.Date, dailyReport));
 
                 lastDate = fileInfo.Date;
             }
 
             Regions.CompareWithFoundRegions(allRegions);
 
-            static string GetTitle(string label)
-                => $"COVID-19 Cases // {label}";
-
-            static string GetDateTitle(string label, DateTime date)
-                => $"{GetTitle(label)} // {date:yyyy-MM-dd}";
-
-            static string GetCombinedTitle(string label, DateTime date, int minSignal, int maxSignals, string braceSuffix)
-                => $"{GetTitle(label)} ({minSignal}+, {braceSuffix}) // {date:yyyy-MM-dd}";
-
             var createdRegionalPlotFileNames = new List<string>();
             var createdCustomPlotFileNames = new List<string>();
 
-            plotter
-                .CreatePlot(
-                    plotDataListGlobal,
-                    GetDateTitle("GLOBAL", lastDate),
-                    "plot-global.png")
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateDiffPlot(
-                    plotDataListGlobal,
-                    GetDateTitle("GLOBAL (diff)", lastDate),
-                    "plot-global-diff.png")
-                .AddTo(createdCustomPlotFileNames);
-
-            string FilterRegionChars(string region)
-                => Regex.Replace(region.ToLower(), @"\W", string.Empty);
-
-            foreach (var region in plotDataRegional.Keys)
-            {
-                plotter
-                    .CreatePlot(
-                        plotDataRegional[region],
-                        GetDateTitle(region, lastDate),
-                        $"plot-{FilterRegionChars(region)}.png",
-                        MinConfirmedRegionalPlot)
-                    .AddTo(createdRegionalPlotFileNames);
-
-                plotter
-                    .CreateDiffPlot(
-                        plotDataRegional[region],
-                        GetDateTitle(region + " (diff)", lastDate),
-                        $"plot-{FilterRegionChars(region)}-diff.png",
-                        MinConfirmedRegionalPlot)
-                    .AddTo(createdRegionalPlotFileNames);
-            }
-
             // remove excluded regions
-            var combinedViewRegionalData 
+            var combinedViewRegionalData
                 = plotDataRegional.WhereRegionNotIn(Regions.CombinedPlotExclusions);
 
-            plotter
-                .CreateAveragePlot(
-                    combinedViewRegionalData,
-                    GetDateTitle($"GLOBAL AVERAGE (wo. China)", lastDate),
-                    "plot-average.png")
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Existing,
-                    GetCombinedTitle(
-                        $"EXISTING",
-                        lastDate,
-                        MinExisting,
-                        MaxSignalsPerCombinedPlot,
-                        "wo. China"),
-                    "plot-existing.png",
-                    MinExisting,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Confirmed,
-                    GetCombinedTitle(
-                        $"CONFIRMED",
-                        lastDate,
-                        MinConfirmed,
-                        MaxSignalsPerCombinedPlot,
-                        "wo. China"),
-                    "plot-confirmed.png",
-                    MinConfirmed,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Recovered,
-                    GetCombinedTitle(
-                        $"RECOVERED",
-                        lastDate,
-                        MinRecovered,
-                        MaxSignalsPerCombinedPlot,
-                        "wo. China"),
-                    "plot-recovered.png",
-                    MinRecovered,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Dead,
-                    GetCombinedTitle($"DEAD", lastDate, MinDead, MaxSignalsPerCombinedPlot, "wo. China"),
-                    "plot-dead.png",
-                    MinDead,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedNormalizedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Dead,
-                    GetTitle("DEAD NORMALIZED // start:50"),
-                    "plot-dead-n.png",
-                    50,
-                    MinDead,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedNormalizedPlot(
-                    combinedViewRegionalData,
-                    pd => pd.Confirmed,
-                    GetTitle("CONFIRMED NORMALIZED // start:50"),
-                    "plot-confirmed-n.png",
-                    50,
-                    MinConfirmed,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-
-            plotter
-                .CreateCombinedNormalizedPlot(
-                    plotDataRegional.WhereRegionIn(Regions.CombinedPlotSet1),
-                    pd => pd.Confirmed,
-                    GetTitle("CONFIRMED NORMALIZED 1 // start:50"),
-                    "plot-confirmed-n1.png",
-                    50,
-                    MinConfirmed,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
-            
-            plotter
-                .CreateCombinedNormalizedPlot(
-                    plotDataRegional.WhereRegionIn(Regions.CombinedPlotSet2),
-                    pd => pd.Confirmed,
-                    GetTitle("CONFIRMED NORMALIZED 2 // start:500"),
-                    "plot-confirmed-n2.png",
-                    500,
-                    MinConfirmed,
-                    MaxSignalsPerCombinedPlot)
-                .AddTo(createdCustomPlotFileNames);
+            CreateGlobalPlots(plotter, lastDate, createdCustomPlotFileNames, plotDataGlobal, plotDataRegional);
+            CreateRegionPlots(plotter, lastDate, createdRegionalPlotFileNames, plotDataRegional);
+            CreateExistingPlots(plotter, lastDate, createdCustomPlotFileNames, combinedViewRegionalData);
+            CreateRecoveredPlots(plotter, lastDate, createdCustomPlotFileNames, combinedViewRegionalData);
+            CreateDeadPlots(plotter, lastDate, createdCustomPlotFileNames, combinedViewRegionalData);
+            CreateConfirmedPlots(plotter, lastDate, createdCustomPlotFileNames, plotDataRegional);
 
             // System.Console.WriteLine("Regional Plots:");
             var orderedRegionalPlots = createdRegionalPlotFileNames.OrderBy(_ => _);
@@ -313,6 +166,216 @@ namespace Corona
             markdownRenderer.RenderPlotListMarkdown("Custom-Plots.md", orderedCustomPlots);
         }
 
+        private static void CreateRegionPlots(Plotter plotter, DateTime lastDate, List<string> createdRegionalPlotFileNames, Dictionary<string, List<PlotData>> plotDataRegional)
+        {
+            string FilterRegionChars(string region)
+                => Regex.Replace(region.ToLower(), @"\W", string.Empty);
+
+            foreach (var region in plotDataRegional.Keys)
+            {
+                plotter
+                    .CreatePlot(
+                        plotDataRegional[region],
+                        GetDateTitle(region, lastDate),
+                        $"plot-{FilterRegionChars(region)}.png",
+                        MinConfirmedRegionalPlot)
+                    .AddTo(createdRegionalPlotFileNames);
+
+                plotter
+                    .CreateDiffPlot(
+                        plotDataRegional[region],
+                        GetDateTitle(region + " (diff)", lastDate),
+                        $"plot-{FilterRegionChars(region)}-diff.png",
+                        MinConfirmedRegionalPlot)
+                    .AddTo(createdRegionalPlotFileNames);
+            }
+        }
+
+        private static void CreateGlobalPlots(Plotter plotter, DateTime lastDate, List<string> createdCustomPlotFileNames, List<PlotData> plotDataListGlobal, RegionalPlotData combinedViewRegionalData)
+        {
+            plotter
+                .CreatePlot(
+                    plotDataListGlobal,
+                    GetDateTitle("GLOBAL", lastDate),
+                    "plot-global.png")
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateDiffPlot(
+                    plotDataListGlobal,
+                    GetDateTitle("GLOBAL (diff)", lastDate),
+                    "plot-global-diff.png")
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateAveragePlot(
+                    combinedViewRegionalData,
+                    GetDateTitle($"GLOBAL (avg)", lastDate),
+                    "plot-average.png")
+                .AddTo(createdCustomPlotFileNames);
+        }
+
+        private static void CreateExistingPlots(
+            Plotter plotter,
+            DateTime lastDate,
+            List<string> createdCustomPlotFileNames,
+            RegionalPlotData combinedViewRegionalData)
+        {
+            plotter
+                .CreateCombinedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Existing,
+                    GetCombinedTitle(
+                        $"EXISTING",
+                        lastDate,
+                        MinExisting,
+                        MaxSignalsPerCombinedPlot),
+                    "plot-existing.png",
+                    MinExisting,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Existing,
+                    GetTitle("EXISITNG NORM. // start:50"),
+                    "plot-existing-n.png",
+                    50,
+                    MinExisting,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+        }
+
+        private static void CreateRecoveredPlots(
+            Plotter plotter,
+            DateTime lastDate,
+            List<string> createdCustomPlotFileNames,
+            RegionalPlotData combinedViewRegionalData)
+        {
+            plotter
+                .CreateCombinedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Recovered,
+                    GetCombinedTitle(
+                        $"RECOVERED",
+                        lastDate,
+                        MinRecovered,
+                        MaxSignalsPerCombinedPlot),
+                    "plot-recovered.png",
+                    MinRecovered,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Recovered,
+                    GetTitle("RECOVERED NORM. // start:50"),
+                    "plot-recovered-n.png",
+                    50,
+                    MinRecovered,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+        }
+
+        private static void CreateDeadPlots(
+            Plotter plotter,
+            DateTime lastDate,
+            List<string> createdCustomPlotFileNames,
+            RegionalPlotData combinedViewRegionalData)
+        {
+            plotter
+                .CreateCombinedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Dead,
+                    GetCombinedTitle(
+                        $"DEAD",
+                        lastDate,
+                        MinDead,
+                        MaxSignalsPerCombinedPlot),
+                    "plot-dead.png",
+                    MinDead,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Dead,
+                    GetTitle("DEAD NORM. // start:50"),
+                    "plot-dead-n.png",
+                    50,
+                    MinDead,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+        }
+
+        static void CreateConfirmedPlots(
+            Plotter plotter,
+            DateTime lastDate,
+            List<string> createdCustomPlotFileNames,
+            IEnumerable<KeyValuePair<string, List<PlotData>>> plotData)
+        {
+            var combinedViewRegionalData = plotData.WhereRegionNotIn(Regions.CombinedPlotExclusions);
+
+            plotter
+                .CreateCombinedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Confirmed,
+                    GetCombinedTitle(
+                        $"CONFIRMED",
+                        lastDate,
+                        MinConfirmed,
+                        MaxSignalsPerCombinedPlot),
+                    "plot-confirmed.png",
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    combinedViewRegionalData,
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORM. // start:50"),
+                    "plot-confirmed-n.png",
+                    50,
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    plotData.WhereRegionIn(Regions.CombinedPlotSet1),
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORM. 1 // start:50"),
+                    "plot-confirmed-n1.png",
+                    50,
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+
+            plotter
+                .CreateCombinedNormalizedPlot(
+                    plotData.WhereRegionIn(Regions.CombinedPlotSet2),
+                    pd => pd.Confirmed,
+                    GetTitle("CONFIRMED NORM. 2 // start:500"),
+                    "plot-confirmed-n2.png",
+                    500,
+                    MinConfirmed,
+                    MaxSignalsPerCombinedPlot)
+                .AddTo(createdCustomPlotFileNames);
+        }
+
+        private static string GetTitle(string label)
+            => $"COVID-19 Cases // {label}";
+
+        private static string GetDateTitle(string label, DateTime date)
+            => $"{GetTitle(label)} // {date:yyyy-MM-dd}";
+
+        private static string GetCombinedTitle(string label, DateTime date, int minSignal, int maxSignals)
+            => $"{GetTitle(label)} ({minSignal}+) // {date:yyyy-MM-dd}";
+
         private static PlotData CreatePlotData(DateTime date, IEnumerable<ReportData> dailyReport)
         {
             var deaths = dailyReport.Sum(i => i.Deaths);
@@ -330,7 +393,7 @@ namespace Corona
             };
         }
 
-        private static ReportData Convert(ReportData2 report) 
+        private static ReportData Convert(ReportData2 report)
         {
             var result = new ReportData();
             result.Province = report.Province;
