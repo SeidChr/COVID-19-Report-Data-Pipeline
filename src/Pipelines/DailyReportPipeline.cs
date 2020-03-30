@@ -15,7 +15,7 @@ namespace Corona
     using Corona.Shared;
     using Corona.Templating;
     using FileHelpers;
-    using RegionalPlotData = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<Plotting.Model.PlotData>>>;
+    using RegionalPlotData = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<Corona.Plotting.Model.PlotData>>>;
 
     /// <summary>
     /// Main Programm class.
@@ -311,7 +311,7 @@ namespace Corona
                 .AddTo(createdCustomPlotFileNames);
         }
 
-        static void CreateConfirmedPlots(
+        private static void CreateConfirmedPlots(
             Plotter plotter,
             DateTime lastDate,
             List<string> createdCustomPlotFileNames,

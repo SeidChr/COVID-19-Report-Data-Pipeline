@@ -1,6 +1,5 @@
 namespace Corona
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -74,6 +73,7 @@ namespace Corona
 
                 ["Mainland China"] = ChinaRegionName,
 
+                ["MS Zaandam"] = OthersRegionName,
                 ["Diamond Princess"] = OthersRegionName,
                 ["Cruise Ship"] = OthersRegionName,
 
@@ -130,6 +130,8 @@ namespace Corona
         /// 20200326: "Diamond Princess", "Guinea-Bissau", "Mali", "Saint Kitts and Nevis"
         /// 
         /// 20200328: "Burma", "West Bank and Gaza"
+        /// 
+        /// 20200330: "MS Zaandam"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>

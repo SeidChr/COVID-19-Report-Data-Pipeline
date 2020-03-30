@@ -19,7 +19,7 @@ namespace Corona.Plotting
             Directory.CreateDirectory(directory);
             this.directory = directory;
         }
-        
+
         public IEnumerable<string> CreatePlot(
             List<PlotData> plotDataset,
             string label,
@@ -36,7 +36,7 @@ namespace Corona.Plotting
 
             var plt = GetDefaultPlot();
 
-            if (startAtConfirmed > 0) 
+            if (startAtConfirmed > 0)
             {
                 plotDataset = plotDataset
                     .SkipWhile(pd => pd.Confirmed < startAtConfirmed)
@@ -44,32 +44,19 @@ namespace Corona.Plotting
             }
 
             var start = plotDataset.First().Date.ToOADate();
+            ////var twoWeeksEarlier = plotDataset.First().Date.AddDays(-14).ToOADate();
 
-            void CreatePlotSignal(
-                Func<PlotData, int> getValue,
-                string label,
-                Color color)
-            { 
-                var signal = plotDataset
-                    .Select(pd => (double)getValue(pd))
-                    .ToArray();
+            var maxValues = new int[2];
 
-                plt.PlotSignal(
-                    signal,
-                    sampleRate: 1,
-                    xOffset: start,
-                    color: color,
-                    label: label + $" ({signal.Last()})");
-            }
+            this.CreatePlotSignal(plt, plotDataset, pd => pd.Existing, start, nameof(PlotData.Existing), Color.Orange);
+            maxValues[0] = this.CreatePlotSignal(plt, plotDataset, pd => pd.Confirmed, start, nameof(PlotData.Confirmed), Color.Red);
+            this.CreatePlotSignal(plt, plotDataset, pd => pd.Recovered, start, nameof(PlotData.Recovered), Color.Green);
+            this.CreatePlotSignal(plt, plotDataset, pd => pd.Dead, start, nameof(PlotData.Dead), Color.Black);
 
-            CreatePlotSignal(pd => pd.Existing, nameof(PlotData.Existing), Color.Orange);
-            CreatePlotSignal(pd => pd.Confirmed, nameof(PlotData.Confirmed), Color.Red);
-            CreatePlotSignal(pd => pd.Recovered, nameof(PlotData.Recovered), Color.Green);
-            CreatePlotSignal(pd => pd.Dead, nameof(PlotData.Dead), Color.Black);
+            ////maxValues[1] = this.CreatePlotSignal(plt, plotDataset, pd => (int)(pd.Dead / 0.005), start, "Confirmed est. (Death-Rate 0.5%)", Color.Aqua);
+            ////this.CreatePlotSignal(plt, plotDataset, pd => (int)(pd.Dead / 0.01), start, "Confirmed est. (Death-Rate 1.0%)", Color.Aqua);
 
-            ////plt.PlotText("asd", 0,0, frame: true);
-
-            plt.Axis(y2: maxConfirmed * 1.03);
+            plt.Axis(y2: maxValues.Max() * 1.03);
 
             plt.Title(label);
 
@@ -289,7 +276,7 @@ namespace Corona.Plotting
 
             yield return file;
         }
-        
+
         private static Plot GetDefaultPlot()
         {
             var plt = new Plot(1000, 500);
@@ -299,7 +286,7 @@ namespace Corona.Plotting
                 useExponentialNotation: false, // do not sho exponents on large numbers
                 useMultiplierNotation: false, // do not show a common muliplier on top
                 useOffsetNotation: false);
-                ////xTickRotation: 90
+            ////xTickRotation: 90
 
             plt.XLabel("github/SeidChr/COVID-19-Report-Data-Pipeline", fontSize: 12);
             ////plt.XLabel("Date");
@@ -329,6 +316,27 @@ namespace Corona.Plotting
 
             // System.Console.WriteLine(file);
             plt.SaveFig(this.directory + "/" + file);
+        }
+
+        private int CreatePlotSignal(
+            Plot plt,
+            IEnumerable<PlotData> data,
+            Func<PlotData, int> getValue,
+            double start,
+            string label,
+            Color color)
+        {
+            var signal = data
+                .Select(pd => getValue(pd));
+
+            plt.PlotSignal(
+                signal.Select(s => (double)s).ToArray(),
+                sampleRate: 1,
+                xOffset: start,
+                color: color,
+                label: label + $" ({signal.Last()})");
+
+            return signal.Max();
         }
     }
 }
