@@ -132,6 +132,8 @@ namespace Corona
         /// 20200328: "Burma", "West Bank and Gaza"
         /// 
         /// 20200330: "MS Zaandam"
+        /// 
+        /// 20200401: "Botswana", "Burundi", "Sierra Leone"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -157,11 +159,13 @@ namespace Corona
                 "Bhutan",
                 "Bolivia",
                 "Bosnia and Herzegovina",
+                "Botswana",
                 "Brazil",
                 "Brunei",
                 "Bulgaria",
                 "Burkina Faso",
                 "Burma",
+                "Burundi",
                 "Cabo Verde",
                 "Cambodia",
                 "Cameroon",
@@ -285,6 +289,7 @@ namespace Corona
                 "Senegal",
                 "Serbia",
                 "Seychelles",
+                "Sierra Leone",
                 "Singapore",
                 "Slovakia",
                 "Slovenia",
