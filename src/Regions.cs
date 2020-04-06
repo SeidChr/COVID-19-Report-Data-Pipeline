@@ -134,6 +134,8 @@ namespace Corona
         /// 20200330: "MS Zaandam"
         /// 
         /// 20200401: "Botswana", "Burundi", "Sierra Leone"
+        /// 
+        /// 20200406: "Malawi", "South Sudan", "Western Sahara"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -243,6 +245,7 @@ namespace Corona
                 "Lithuania",
                 "Luxembourg",
                 "Madagascar",
+                "Malawi",
                 "Malaysia",
                 "Maldives",
                 "Mali",
@@ -295,6 +298,7 @@ namespace Corona
                 "Slovenia",
                 "Somalia",
                 "South Africa",
+                "South Sudan",
                 "Sri Lanka",
                 "Sudan",
                 "Suriname",
@@ -316,6 +320,7 @@ namespace Corona
                 "Vatican City",
                 "Venezuela",
                 "West Bank and Gaza",
+                "Western Sahara",
                 "Zambia",
                 "Zimbabwe",
                 AzerbaijanRegionName,
