@@ -37,7 +37,7 @@ namespace Corona
         // filter regions for an own region-plot
         public const int MinConfirmedRegionalPlot = 2500;
 
-        public const int MaxSignalsPerCombinedPlot = 25;
+        public const int MaxSignalsPerCombinedPlot = 19;
 
         /// <summary>
         /// Main Programm entry point.
