@@ -136,6 +136,8 @@ namespace Corona
         /// 20200401: "Botswana", "Burundi", "Sierra Leone"
         /// 
         /// 20200406: "Malawi", "South Sudan", "Western Sahara"
+        /// 
+        /// 20200409: "Sao Tome and Principe"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -288,6 +290,7 @@ namespace Corona
                 "Saint Kitts and Nevis",
                 "Saint Lucia",
                 "San Marino",
+                "Sao Tome and Principe",
                 "Saudi Arabia",
                 "Senegal",
                 "Serbia",
