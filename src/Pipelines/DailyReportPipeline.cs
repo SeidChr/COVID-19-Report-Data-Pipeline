@@ -35,7 +35,7 @@ namespace Corona
         public const int MinDead = 250;
 
         // filter regions for an own region-plot
-        public const int MinConfirmedRegionalPlot = 1000;
+        public const int MinConfirmedRegionalPlot = 2500;
 
         public const int MaxSignalsPerCombinedPlot = 25;
 
