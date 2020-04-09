@@ -44,17 +44,43 @@ namespace Corona.Plotting
             }
 
             var start = plotDataset.First().Date.ToOADate();
-            ////var twoWeeksEarlier = plotDataset.First().Date.AddDays(-14).ToOADate();
 
             var maxValues = new int[2];
 
-            this.CreatePlotSignal(plt, plotDataset, pd => pd.Existing, start, nameof(PlotData.Existing), Color.Orange);
-            maxValues[0] = this.CreatePlotSignal(plt, plotDataset, pd => pd.Confirmed, start, nameof(PlotData.Confirmed), Color.Red);
-            this.CreatePlotSignal(plt, plotDataset, pd => pd.Recovered, start, nameof(PlotData.Recovered), Color.Green);
-            this.CreatePlotSignal(plt, plotDataset, pd => pd.Dead, start, nameof(PlotData.Dead), Color.Black);
+            this.CreateSignalBasedPlotArea(
+                plt,
+                plotDataset, 
+                pd => pd.Confirmed, 
+                pd => pd.Confirmed - pd.Recovered, 
+                start, 
+                nameof(PlotData.Recovered), 
+                Color.Green);
 
-            ////maxValues[1] = this.CreatePlotSignal(plt, plotDataset, pd => (int)(pd.Dead / 0.005), start, "Confirmed est. (Death-Rate 0.5%)", Color.Aqua);
-            ////this.CreatePlotSignal(plt, plotDataset, pd => (int)(pd.Dead / 0.01), start, "Confirmed est. (Death-Rate 1.0%)", Color.Aqua);
+            this.CreateSignalBasedPlotArea(
+                plt, 
+                plotDataset, 
+                pd => pd.Confirmed - pd.Recovered, 
+                pd => pd.Confirmed - pd.Recovered - pd.Dead, 
+                start, 
+                nameof(PlotData.Dead), 
+                Color.Black);
+
+            this.CreateZeroBasedPlotArea(
+                plt, 
+                plotDataset, 
+                pd => pd.Confirmed - pd.Recovered - pd.Dead, 
+                start, 
+                nameof(PlotData.Existing), 
+                Color.Red);
+
+            maxValues[0] = this.CreatePlotSignal(
+                plt, 
+                plotDataset, 
+                pd => pd.Confirmed, 
+                start: start, 
+                label: nameof(PlotData.Confirmed), 
+                color: Color.BlueViolet, 
+                markerSize: 0);
 
             plt.Axis(y2: maxValues.Max() * 1.03);
 
@@ -324,7 +350,8 @@ namespace Corona.Plotting
             Func<PlotData, int> getValue,
             double start,
             string label,
-            Color color)
+            Color color,
+            int markerSize = 5)
         {
             var signal = data
                 .Select(pd => getValue(pd));
@@ -334,9 +361,92 @@ namespace Corona.Plotting
                 sampleRate: 1,
                 xOffset: start,
                 color: color,
-                label: label + $" ({signal.Last()})");
+                label: label + $" ({signal.Last()})",
+                markerSize: markerSize);
 
             return signal.Max();
+        }
+
+        private int CreateZeroBasedPlotArea(
+            Plot plt,
+            IEnumerable<PlotData> data,
+            Func<PlotData, int> getUpperValue,
+            double start,
+            string label,
+            Color color)
+        {
+            var signal = data
+                .Select(pd => getUpperValue(pd));
+
+            var sig = signal.Select(s => (double)s).ToArray();
+
+            var arrayLength = sig.Length + 2;
+            var xs = new double[arrayLength];
+            var ys = new double[arrayLength];
+
+            Array.Copy(sig, 0, ys, 1, sig.Length);
+
+            xs[0] = xs[1] = start;
+            ys[0] = 0;
+
+            for (var i = 2; i < arrayLength; i++)
+            {
+                xs[i] = xs[i - 1] + 1d;
+            }
+
+            xs[arrayLength - 1] = xs[arrayLength - 2];
+
+            plt.PlotPolygon(xs, ys, fillColor: color, label: label + $" ({signal.Last()})");
+            // plt.PlotSignal(
+            //     sig,
+            //     sampleRate: 1,
+            //     xOffset: start,
+            //     color: color,
+            //     label: label + $" ({signal.Last()})");
+
+            return signal.Max();
+        }
+
+        private int CreateSignalBasedPlotArea(
+            Plot plt,
+            IEnumerable<PlotData> data,
+            Func<PlotData, int> getUpperValue,
+            Func<PlotData, int> getLowerValue,
+            double start,
+            string label,
+            Color color)
+        {
+            var sig = data
+                .Select(pd =>
+                {
+                    var upper = getUpperValue(pd);
+                    var lower = getLowerValue(pd);
+                    return (upper, doubleUpper: (double)upper, lower, doubleLower: (double)lower);
+                }).ToArray();
+
+            var arrayLength = sig.Length;
+
+            var xs = new double[arrayLength * 2];
+            var ys = new double[arrayLength * 2];
+
+            var fd = start;
+            var rd = start + (arrayLength - 1);
+
+            for (int i = 0, y = arrayLength, r = arrayLength - 1; i < arrayLength; i++, y++, r--)
+            {
+                xs[i] = fd;
+                xs[y] = rd;
+
+                fd += 1d;
+                rd -= 1d;
+
+                ys[i] = sig[i].doubleUpper;
+                ys[y] = sig[r].doubleLower;
+            }
+
+            plt.PlotPolygon(xs, ys, fillColor: color, label: label + $" ({sig.Last().upper - sig.Last().lower})");
+
+            return sig.Max(s => s.upper);
         }
     }
 }
