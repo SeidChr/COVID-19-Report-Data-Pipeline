@@ -12,6 +12,10 @@ namespace Corona.Plotting
 
     public class Plotter
     {
+        private const string Subtitle = "github/SeidChr/COVID-19-Report-Data-Pipeline";
+
+        private const double PolygonFillAlpha = .6;
+
         private readonly string directory;
 
         public Plotter(string directory)
@@ -314,7 +318,7 @@ namespace Corona.Plotting
                 useOffsetNotation: false);
             ////xTickRotation: 90
 
-            plt.XLabel("github/SeidChr/COVID-19-Report-Data-Pipeline", fontSize: 12);
+            plt.XLabel(Subtitle, fontSize: 12);
             ////plt.XLabel("Date");
 
             plt.Legend(fontSize: 10, location: legendLocation.upperLeft);
@@ -396,13 +400,12 @@ namespace Corona.Plotting
 
             xs[arrayLength - 1] = xs[arrayLength - 2];
 
-            plt.PlotPolygon(xs, ys, fillColor: color, label: label + $" ({signal.Last()})");
-            // plt.PlotSignal(
-            //     sig,
-            //     sampleRate: 1,
-            //     xOffset: start,
-            //     color: color,
-            //     label: label + $" ({signal.Last()})");
+            plt.PlotPolygon(
+                xs,
+                ys,
+                fillColor: color,
+                fillAlpha: PolygonFillAlpha,
+                label: label + $" ({signal.Last()})");
 
             return signal.Max();
         }
@@ -444,7 +447,12 @@ namespace Corona.Plotting
                 ys[y] = sig[r].doubleLower;
             }
 
-            plt.PlotPolygon(xs, ys, fillColor: color, label: label + $" ({sig.Last().upper - sig.Last().lower})");
+            plt.PlotPolygon(
+                xs,
+                ys,
+                fillColor: color,
+                fillAlpha: PolygonFillAlpha,
+                label: label + $" ({sig.Last().upper - sig.Last().lower})");
 
             return sig.Max(s => s.upper);
         }
