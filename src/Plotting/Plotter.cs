@@ -86,6 +86,10 @@ namespace Corona.Plotting
                 color: Color.BlueViolet, 
                 markerSize: 0);
 
+            var lastDataSet = plotDataset.Last();
+            var deathRate = ((double)lastDataSet.Dead) / lastDataSet.Confirmed;
+            plt.PlotAnnotation($"Deaths / Confirmed: {deathRate:0.000}", 5, 85, fillColor: Color.Transparent, shadow: true);
+
             plt.Axis(y2: maxValues.Max() * 1.03);
 
             plt.Title(label);
@@ -307,6 +311,16 @@ namespace Corona.Plotting
             yield return file;
         }
 
+        private static IEnumerable<double> Increment(double start, double increment, int times)
+        {
+            var current = start;
+            for (var i = 0; i < times; i++)
+            {
+                yield return current;
+                current += increment;
+            }
+        }
+
         private static Plot GetDefaultPlot()
         {
             var plt = new Plot(1000, 500);
@@ -457,17 +471,14 @@ namespace Corona.Plotting
                 fillAlpha: PolygonFillAlpha,
                 label: label + $" ({sig.Last().upper - sig.Last().lower})");
 
-            return sig.Max(s => s.upper);
-        }
+            ////plt.PlotFill(
+            ////    xs,
+            ////    ys,
+            ////    fillColor: color,
+            ////    fillAlpha: PolygonFillAlpha,
+            ////    label: label + $" ({sig.Last().upper - sig.Last().lower})");
 
-        static IEnumerable<double> Increment(double start, double increment, int times)
-        {
-            var current = start;
-            for (var i = 0; i < times; i++)
-            {
-                yield return current;
-                current += increment;
-            }
+            return sig.Max(s => s.upper);
         }
     }
 }
