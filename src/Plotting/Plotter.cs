@@ -88,7 +88,7 @@ namespace Corona.Plotting
 
             var lastDataSet = plotDataset.Last();
             var deathRate = ((double)lastDataSet.Dead) / lastDataSet.Confirmed;
-            plt.PlotAnnotation($"Deaths / Confirmed: {deathRate:0.000}", 5, 85, fillColor: Color.White, shadow: true);
+            plt.PlotAnnotation($"Deaths / Confirmed: {deathRate:0.000}", 5, 85, fillColor: Color.White, shadow: false);
 
             plt.Axis(y2: maxValues.Max() * 1.03);
 
