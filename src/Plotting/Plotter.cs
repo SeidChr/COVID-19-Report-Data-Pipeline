@@ -360,10 +360,13 @@ namespace Corona.Plotting
             var signal = data
                 .Select(pd => getValue(pd));
 
-            plt.PlotSignal(
-                signal.Select(s => (double)s).ToArray(),
-                sampleRate: 1,
-                xOffset: start,
+            var ys = signal.Select(s => (double)s).ToArray();
+
+            var xs = Increment(start - .05, 1d, ys.Length).ToArray();
+
+            plt.PlotScatter(
+                xs,
+                ys,
                 color: color,
                 label: label + $" ({signal.Last()})",
                 markerSize: markerSize);
