@@ -138,6 +138,8 @@ namespace Corona
         /// 20200406: "Malawi", "South Sudan", "Western Sahara"
         /// 
         /// 20200409: "Sao Tome and Principe"
+        /// 
+        /// 20200411: "Yemen"
         /// </summary>
         public static List<string> All { get; }
             = new List<string>
@@ -324,6 +326,7 @@ namespace Corona
                 "Venezuela",
                 "West Bank and Gaza",
                 "Western Sahara",
+                "Yemen",
                 "Zambia",
                 "Zimbabwe",
                 AzerbaijanRegionName,
