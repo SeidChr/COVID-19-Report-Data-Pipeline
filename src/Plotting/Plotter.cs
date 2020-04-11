@@ -459,5 +459,15 @@ namespace Corona.Plotting
 
             return sig.Max(s => s.upper);
         }
+
+        static IEnumerable<double> Increment(double start, double increment, int times)
+        {
+            var current = start;
+            for (var i = 0; i < times; i++)
+            {
+                yield return current;
+                current += increment;
+            }
+        }
     }
 }
